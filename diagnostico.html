@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagnóstico de regularização imobiliária</title>
+<meta name="description" content="Responda perguntas objetivas sobre contrato, pagamento, matrícula e vendedor e veja, na hora, o caminho de regularização que corresponde ao que você informou.">
+<link rel="canonical" href="https://aledcanova.github.io/regularizacao-de-imoveis/diagnostico.html">
+<meta property="og:title" content="Diagnóstico de regularização imobiliária">
+<meta property="og:description" content="Responda perguntas objetivas sobre contrato, pagamento, matrícula e vendedor e veja, na hora, o caminho de regularização que corresponde ao que você informou.">
+<meta property="og:locale" content="pt_BR">
+<meta name="theme-color" content="#ffffff">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; base-uri 'self'; form-action 'self'">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f2a43'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='17' fill='%23fff' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Regularização de Imóveis, página inicial">
+      <span class="brand-mark" aria-hidden="true">R</span>
+      <span><strong>Regularização de Imóveis</strong><small>Compra · Escritura · Registro</small></span>
+    </a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Principal">
+      <a href="adjudicacao.html">Como funciona</a>
+      <a href="sobre-o-procedimento.html">Sobre o procedimento</a>
+      <a href="perguntas.html">Perguntas</a>
+      <a href="quem-somos.html">Quem somos</a>
+      <a href="contato.html">Contato</a>
+      <a class="cta" href="diagnostico.html">Avaliar meu caso</a>
+    </nav>
+  </div>
+</header>
+<main id="conteudo">
+
+<section class="wizard">
+  <div class="wrap narrow">
+    <h1 class="sr-only">Diagnóstico de regularização imobiliária</h1>
+    <noscript><div class="note warn"><p>O diagnóstico precisa de JavaScript ativado. Se preferir, escreva para <a href="mailto:alexandre@dickelcanova.com">alexandre@dickelcanova.com</a>.</p></div></noscript>
+
+    <div class="wz-top" id="wz-top">
+      <progress id="wz-progress" max="100" value="0" aria-label="Progresso do diagnóstico"></progress>
+      <span class="wz-count" id="wz-count" aria-live="polite"></span>
+    </div>
+
+    <div class="wz-stage" id="wz-stage"></div>
+
+    <!-- Resultado -->
+    <div class="wz-step mapa" id="wz-result" hidden>
+      <div class="verdict" id="verdict">
+        <span class="pill">Resultado preliminar</span>
+        <h2 id="verdict-title" tabindex="-1"></h2>
+        <p id="verdict-text"></p>
+        <p class="tecnico" id="verdict-tecnico" hidden></p>
+      </div>
+      <div id="mapa"></div>
+      <p class="muted">Classificação informativa, feita somente com as suas respostas. Não é consulta jurídica nem promessa de resultado. A definição da medida depende da análise da matrícula e dos documentos por advogado.</p>
+
+      <div class="next no-print" id="next">
+        <h3>Próximo passo</h3>
+        <p>Envie seus dados e os documentos que tiver. Em seguida você vê a proposta da consulta e pode contratar pelo próprio site, ou falar com o advogado.</p>
+        <div class="btns">
+          <button class="btn" type="button" id="abrir-envio">Iniciar a regularização</button>
+          <button class="btn ghost" type="button" id="imprimir">Imprimir o resultado</button>
+          <button class="btn link" type="button" id="refazer">Refazer</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Passo 1: dados e documentos (enviado ao script do Google do escritório; ver backend/Code.gs) -->
+    <div class="wz-step" id="wz-envio" hidden>
+      <p class="wz-section">Passo 1 de 3 · Dados e documentos</p>
+      <h2 class="wz-q" id="envio-title" tabindex="-1">Seus dados e documentos</h2>
+      <p class="wz-help">As respostas do diagnóstico seguem junto. Os campos marcados como opcionais podem ficar em branco.</p>
+      <form class="form" id="caso" name="caso" method="POST" action="/" enctype="multipart/form-data" data-netlify="true" netlify-honeypot="site" novalidate>
+        <input type="hidden" name="form-name" value="caso">
+        <input type="hidden" name="protocolo" id="f-protocolo">
+        <input type="hidden" name="resultado_codigo" id="f-codigo">
+        <input type="hidden" name="resultado" id="f-resultado">
+        <input type="hidden" name="respostas" id="f-respostas">
+        <input type="hidden" name="respostas_json" id="f-json">
+        <input type="hidden" name="pontos_json" id="f-pontos">
+        <input type="hidden" name="complexidade" id="f-faixa">
+        <p class="hp" aria-hidden="true"><label>Não preencha este campo <input name="site" tabindex="-1" autocomplete="off"></label></p>
+
+        <div class="field">
+          <label for="f-nome">Nome completo</label>
+          <input type="text" id="f-nome" name="nome" autocomplete="name" required aria-describedby="e-nome">
+          <p class="err" id="e-nome" hidden>Informe o seu nome completo.</p>
+        </div>
+        <div class="field">
+          <label for="f-email">E-mail</label>
+          <input type="email" id="f-email" name="email" autocomplete="email" inputmode="email" required aria-describedby="e-email">
+          <p class="err" id="e-email" hidden>Informe um e-mail válido. É por ele que você recebe o contrato e a análise.</p>
+        </div>
+        <div class="field">
+          <label for="f-tel">Telefone <span class="opt">(opcional)</span></label>
+          <input type="tel" id="f-tel" name="telefone" autocomplete="tel" inputmode="tel">
+        </div>
+        <div class="row2">
+          <div class="field">
+            <label for="f-cidade">Cidade do imóvel</label>
+            <input type="text" id="f-cidade" name="cidade_imovel" autocomplete="off" required aria-describedby="e-cidade">
+            <p class="err" id="e-cidade" hidden>Informe a cidade onde fica o imóvel.</p>
+          </div>
+          <div class="field">
+            <label for="f-uf">Estado</label>
+            <select id="f-uf" name="uf_imovel" required aria-describedby="e-uf">
+              <option value="">Selecione</option>
+              <option>AC</option><option>AL</option><option>AP</option><option>AM</option><option>BA</option><option>CE</option><option>DF</option><option>ES</option><option>GO</option><option>MA</option><option>MT</option><option>MS</option><option>MG</option><option>PA</option><option>PB</option><option>PR</option><option>PE</option><option>PI</option><option>RJ</option><option>RN</option><option>RS</option><option>RO</option><option>RR</option><option>SC</option><option>SP</option><option>SE</option><option>TO</option>
+            </select>
+            <p class="err" id="e-uf" hidden>Selecione o estado.</p>
+          </div>
+        </div>
+
+        <fieldset>
+          <legend>Documentos <span class="opt">(opcional nesta etapa)</span></legend>
+          <p class="hint" id="h-arq">PDF ou foto legível. Até 8 MB somando os três arquivos. O que faltar pode ser enviado depois, por e-mail.</p>
+          <div class="field">
+            <label for="f-contrato">Contrato da compra</label>
+            <input type="file" id="f-contrato" name="arquivo_contrato" accept=".pdf,.jpg,.jpeg,.png,.heic,application/pdf,image/*" aria-describedby="h-arq e-arq">
+          </div>
+          <div class="field">
+            <label for="f-matricula">Matrícula do imóvel</label>
+            <input type="file" id="f-matricula" name="arquivo_matricula" accept=".pdf,.jpg,.jpeg,.png,.heic,application/pdf,image/*" aria-describedby="h-arq e-arq">
+          </div>
+          <div class="field">
+            <label for="f-pagamento">Comprovante de pagamento ou quitação</label>
+            <input type="file" id="f-pagamento" name="arquivo_pagamento" accept=".pdf,.jpg,.jpeg,.png,.heic,application/pdf,image/*" aria-describedby="h-arq e-arq">
+          </div>
+          <p class="err" id="e-arq" hidden></p>
+        </fieldset>
+
+        <div class="field">
+          <label for="f-msg">Algo que queira acrescentar <span class="opt">(opcional)</span></label>
+          <textarea id="f-msg" name="mensagem" rows="3" maxlength="1500"></textarea>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" name="consentimento_tratamento" id="f-c1" value="sim" required aria-describedby="e-c1">
+          <span>Li a <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a> e os <a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a> e solicito a proposta de honorários para o meu caso, com o tratamento dos dados e documentos que estou enviando para essa finalidade.</span>
+        </label>
+        <p class="err" id="e-c1" hidden>É preciso marcar esta opção para enviar.</p>
+        <label class="check">
+          <input type="checkbox" name="consentimento_transferencia" id="f-c2" value="sim" required aria-describedby="e-c2">
+          <span><strong>Transferência internacional.</strong> Estou ciente de que os dados e arquivos deste formulário ficam armazenados em provedor de hospedagem e, se eu contratar a consulta, são processados por serviço de inteligência artificial, ambos localizados nos Estados Unidos, e consinto com essa transferência.</span>
+        </label>
+        <p class="err" id="e-c2" hidden>É preciso marcar esta opção para enviar.</p>
+
+        <p class="err" id="e-envio" role="alert" hidden></p>
+        <div class="wz-nav">
+          <button class="btn link" type="button" id="voltar-resultado">← Voltar ao resultado</button>
+          <button class="btn" type="submit" id="enviar">Enviar e ver a proposta</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Passo 2: proposta (o preço só aparece aqui, a quem enviou os dados e pediu a proposta) -->
+    <div class="wz-step" id="wz-proposta" hidden>
+      <p class="wz-section">Passo 2 de 3 · Proposta</p>
+      <h2 class="wz-q" id="proposta-title" tabindex="-1">Como você quer seguir?</h2>
+      <p class="wz-help">Dados recebidos. Protocolo <strong class="prot"></strong>. Esta proposta é individual e vale para este protocolo.</p>
+      <p class="note" id="nota-so-analise" hidden>Pelo resultado do diagnóstico, o caminho do seu caso ainda precisa ser definido com os documentos. Por isso a contratação começa pela consulta de viabilidade.</p>
+      <div class="offers">
+        <div class="card offer" id="offer-procedimento">
+          <h3>Regularização completa</h3>
+          <p class="price" id="preco-proc">R$ 9.800</p>
+          <p class="muted">Entrada de <span id="entrada-proc">R$ 3.920</span> agora e duas parcelas de <span id="parcela-proc">R$ 2.940</span>: uma no protocolo do pedido no Registro de Imóveis e outra no registro.</p>
+          <ul>
+            <li>Consulta de viabilidade incluída</li>
+            <li>Ata notarial, requerimento e acompanhamento até o registro</li>
+            <li>O advogado revisa o caso em até 24 horas; se não confirmar, o valor pago é devolvido integralmente</li>
+          </ul>
+          <button class="btn" type="button" data-produto="procedimento">Iniciar o processo de regularização</button>
+        </div>
+        <div class="card offer">
+          <h3>Consulta com análise documental</h3>
+          <p class="price">R$ 600</p>
+          <p class="muted">Pagamento único. O valor é abatido se você contratar o procedimento em até 30 dias.</p>
+          <ul>
+            <li>Exame do contrato, dos comprovantes e da matrícula pelo advogado</li>
+            <li>Orientação definitiva por escrito, revisada e assinada pelo responsável técnico, em até 24 horas</li>
+            <li>Proposta detalhada do procedimento: o que será feito, como e por qual valor</li>
+          </ul>
+          <button class="btn" type="button" data-produto="analise">Contratar a consulta</button>
+        </div>
+      </div>
+      <p class="muted">Os valores são de honorários advocatícios. Emolumentos de cartório, certidões, despesas de notificação e o imposto de transmissão (ITBI) são pagos por você diretamente aos órgãos, e são estimados na orientação.</p>
+      <div class="humano">
+        <p><strong>Prefere falar com uma pessoa?</strong> O advogado responde em até 24 horas, em dias úteis. Seus dados já estão no protocolo; não é preciso repetir.</p>
+        <div class="btns">
+          <a class="btn ghost humano-link" href="mailto:alexandre@dickelcanova.com">Atendimento humano por e-mail</a>
+          <button class="btn link" type="button" id="abrir-falar">Outras formas de contato</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Passo 3: contrato e aceite -->
+    <div class="wz-step" id="wz-contrato" hidden>
+      <p class="wz-section">Passo 3 de 3 · Contrato</p>
+      <h2 class="wz-q" id="contrato-title" tabindex="-1">Leia e aceite o contrato</h2>
+      <p class="wz-help">Protocolo <strong class="prot"></strong>. Uma cópia do contrato aceito é enviada ao seu e-mail.</p>
+
+      <div class="contract" id="ct-analise" tabindex="0" role="region" aria-label="Contrato de consulta com análise documental" hidden>
+        <h3>Contrato de prestação de serviços advocatícios: consulta com análise documental</h3>
+        <p><strong>Contratado:</strong> Alexandre Dickel Canova, advogado, OAB/RS 127.163, Porto Alegre/RS. <strong>Contratante:</strong> a pessoa identificada no formulário deste protocolo.</p>
+        <p><strong>1. Objeto.</strong> Consulta jurídica em matéria imobiliária, compreendendo: (a) o exame dos documentos apresentados pelo Contratante (contrato de aquisição, comprovantes de pagamento e matrícula do imóvel); (b) a orientação definitiva, por escrito, sobre a viabilidade da regularização do imóvel, com a medida cabível, as pendências e as etapas, revisada e assinada pelo Contratado; e (c) a proposta detalhada para o procedimento indicado, com o que será feito, como e por qual valor.</p>
+        <p><strong>2. Forma e prazo.</strong> Os documentos do item 1 são enviados por e-mail em até 24 horas, contadas da confirmação do pagamento e do recebimento do contrato de aquisição e da matrícula do imóvel (ou dos dados necessários para obtê-la). Na preparação podem ser usadas ferramentas automatizadas; nada é enviado ao Contratante sem a revisão e a assinatura do Contratado.</p>
+        <p><strong>3. Honorários.</strong> R$ 600, em pagamento único. Se o Contratante contratar o procedimento em até 30 dias do envio da proposta, esse valor é abatido dos honorários correspondentes.</p>
+        <p><strong>4. Fora do objeto.</strong> Obtenção de certidões pagas, atos perante cartórios, medidas judiciais e o procedimento de regularização em si, que depende de contratação própria.</p>
+        <p><strong>5. Desistência e devolução.</strong> O Contratante pode desistir antes do envio da orientação, com devolução integral do valor pago em até 5 dias úteis. O Contratado devolve integralmente o valor, no mesmo prazo, se constatar impedimento ou conflito de interesses, ou se os documentos mínimos não forem apresentados em 30 dias.</p>
+        <p><strong>6. Natureza.</strong> A orientação é elaborada com base nas informações e nos documentos apresentados e não garante o resultado de procedimento futuro, que depende da qualificação do tabelião e do oficial de registro.</p>
+        <p><strong>7. Sigilo e dados pessoais.</strong> As informações são protegidas pelo sigilo profissional e tratadas conforme a Política de Privacidade do site.</p>
+        <p><strong>8. Aceite eletrônico.</strong> As partes admitem como válida a contratação por aceite eletrônico neste site, com registro de data, hora e dados do Contratante (Medida Provisória nº 2.200-2/2001, art. 10, § 2º).</p>
+        <p><strong>9. Foro.</strong> O do domicílio do Contratante.</p>
+        <p class="muted">Versão 2026-10-07.</p>
+      </div>
+
+      <div class="contract" id="ct-procedimento" tabindex="0" role="region" aria-label="Contrato de regularização completa" hidden>
+        <h3>Contrato de prestação de serviços advocatícios: regularização de imóvel</h3>
+        <p><strong>Contratado:</strong> Alexandre Dickel Canova, advogado, OAB/RS 127.163, Porto Alegre/RS. <strong>Contratante:</strong> a pessoa identificada no formulário deste protocolo.</p>
+        <p><strong>1. Objeto.</strong> Consulta de viabilidade e, confirmada esta, atuação no procedimento de adjudicação compulsória extrajudicial (Lei nº 6.015/1973, art. 216-B) do imóvel indicado pelo Contratante, compreendendo: análise documental; levantamento de certidões; preparo do dossiê e acompanhamento da ata notarial; elaboração e protocolo do requerimento no Registro de Imóveis; cumprimento de exigências; acompanhamento das notificações e do registro.</p>
+        <p><strong>2. Confirmação pelo advogado.</strong> O Contratado examina o caso em até 24 horas após a confirmação do pagamento da entrada e comunica por e-mail se confirma a contratação. Se não confirmar, por inviabilidade da medida, conflito de interesses ou documentação insuficiente, o contrato se desfaz e o valor pago é devolvido integralmente em até 5 dias úteis. Se o Contratado não se manifestar nesse prazo, o Contratante pode cancelar a contratação, com a mesma devolução.</p>
+        <p><strong>3. Honorários.</strong> <span class="ct-total">R$ 9.800</span>, assim pagos: <span class="ct-entrada">R$ 3.920</span> no aceite deste contrato; <span class="ct-parcela">R$ 2.940</span> no protocolo do requerimento no Registro de Imóveis; <span class="ct-parcela">R$ 2.940</span> no registro da propriedade ou na outorga da escritura pelo vendedor, o que ocorrer primeiro.</p>
+        <p><strong>4. Resultado antecipado.</strong> Se, em razão da notificação ou das tratativas, o vendedor ou seus sucessores outorgarem a escritura definitiva, o objeto considera-se cumprido e os honorários são integralmente devidos.</p>
+        <p><strong>5. Impugnação ou extinção.</strong> Se o procedimento for encerrado por impugnação acolhida ou por fato não imputável ao Contratado, são devidas as parcelas vencidas até aquela etapa.</p>
+        <p><strong>6. Fora do objeto.</strong> Ação judicial de qualquer natureza, inventário, regularização fundiária, retificação de área e usucapião, que dependem de contratação própria.</p>
+        <p><strong>7. Despesas.</strong> Emolumentos de tabelionato e de registro, certidões, editais, correios e o ITBI são pagos pelo Contratante diretamente aos respectivos órgãos. A estimativa é informada na consulta de viabilidade.</p>
+        <p><strong>8. Procuração.</strong> O procedimento exige procuração com poderes específicos, que o Contratante assina após a confirmação, na forma exigida pelo cartório.</p>
+        <p><strong>9. Obrigações do Contratante.</strong> Fornecer documentos verdadeiros e completos e informar qualquer processo, disputa ou ocupação envolvendo o imóvel.</p>
+        <p><strong>10. Natureza.</strong> Obrigação de meio. O deferimento depende da qualificação do tabelião e do oficial de registro e da conduta dos notificados.</p>
+        <p><strong>11. Sigilo e dados pessoais.</strong> As informações são protegidas pelo sigilo profissional e tratadas conforme a Política de Privacidade do site.</p>
+        <p><strong>12. Aceite eletrônico.</strong> As partes admitem como válida a contratação por aceite eletrônico neste site, com registro de data, hora e dados do Contratante (Medida Provisória nº 2.200-2/2001, art. 10, § 2º).</p>
+        <p><strong>13. Foro.</strong> O do domicílio do Contratante.</p>
+        <p class="muted">Versão 2026-10-07.</p>
+      </div>
+
+      <form class="form" id="contratacao" name="contratacao" method="POST" action="/" data-netlify="true" netlify-honeypot="site" novalidate>
+        <input type="hidden" name="form-name" value="contratacao">
+        <input type="hidden" name="protocolo" id="k-protocolo">
+        <input type="hidden" name="produto" id="k-produto">
+        <input type="hidden" name="valor_total" id="k-total">
+        <input type="hidden" name="valor_agora" id="k-agora">
+        <input type="hidden" name="versao_contrato" id="k-versao">
+        <input type="hidden" name="nome" id="k-nome">
+        <input type="hidden" name="email" id="k-email">
+        <input type="hidden" name="aceito_em" id="k-quando">
+        <p class="hp" aria-hidden="true"><label>Não preencha este campo <input name="site" tabindex="-1" autocomplete="off"></label></p>
+        <div class="field">
+          <label for="k-cpf">CPF do contratante</label>
+          <input type="text" id="k-cpf" name="cpf" inputmode="numeric" autocomplete="off" maxlength="14" required aria-describedby="e-cpf h-cpf">
+          <p class="hint" id="h-cpf">Usado apenas para identificar você no contrato.</p>
+          <p class="err" id="e-cpf" hidden>Informe um CPF válido.</p>
+        </div>
+        <div class="field">
+          <label for="k-end">Endereço completo</label>
+          <input type="text" id="k-end" name="endereco" autocomplete="street-address" required aria-describedby="e-end">
+          <p class="err" id="e-end" hidden>Informe o seu endereço (rua, número, cidade e estado).</p>
+        </div>
+        <label class="check">
+          <input type="checkbox" name="aceite" id="k-aceite" value="sim" required aria-describedby="e-aceite">
+          <span>Li e aceito o contrato acima, no valor de <strong id="k-resumo"></strong>.</span>
+        </label>
+        <p class="err" id="e-aceite" hidden>É preciso aceitar o contrato para continuar.</p>
+        <p class="err" id="e-contratar" role="alert" hidden></p>
+        <div class="wz-nav">
+          <button class="btn link" type="button" id="voltar-proposta">← Voltar à proposta</button>
+          <button class="btn" type="submit" id="contratar">Aceitar e ir para o pagamento</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Pagamento -->
+    <div class="wz-step" id="wz-pagamento" hidden>
+      <div class="verdict ok">
+        <span class="pill">Contrato aceito</span>
+        <h2 id="pag-title" tabindex="-1">Falta só o pagamento.</h2>
+        <p>Protocolo <strong class="prot"></strong> · <span id="pag-produto"></span> · <strong id="pag-valor"></strong></p>
+      </div>
+      <div id="pag-pix" hidden>
+        <h3>Pix</h3>
+        <p>Copie o código abaixo e cole no aplicativo do seu banco, na opção "Pix copia e cola". O valor já vem preenchido.</p>
+        <label class="sr-only" for="pix-code">Código Pix copia e cola</label>
+        <textarea class="pixcode" id="pix-code" readonly rows="4"></textarea>
+        <div class="btns"><button class="btn" type="button" id="pix-copiar">Copiar código Pix</button></div>
+      </div>
+      <div id="pag-cartao" hidden>
+        <h3>Pagamento pelo Mercado Pago</h3>
+        <p>Você paga por Pix ou cartão na página do Mercado Pago, que processa a operação. Os dados do cartão não passam por este site. Use no pagamento o mesmo nome e e-mail informados aqui, para a confirmação ser automática.</p>
+        <div class="btns"><a class="btn" id="cartao-link" href="#" target="_blank" rel="noopener">Pagar com Mercado Pago</a></div>
+        <p class="selo-mp"><img src="assets/img/mercado-pago.png" alt="Mercado Pago" width="107" height="28"><span>Pagamento seguro, processado pelo Mercado Pago</span></p>
+      </div>
+      <div class="note" id="pag-email" hidden>
+        <p>As instruções de pagamento serão enviadas ao seu e-mail.</p>
+      </div>
+      <h3>O que acontece agora</h3>
+      <ol class="steps" id="pag-passos"></ol>
+      <p class="muted">A confirmação do pagamento é feita em horário comercial e comunicada por e-mail. Dúvidas: <a href="mailto:alexandre@dickelcanova.com">alexandre@dickelcanova.com</a>, informando o protocolo.</p>
+    </div>
+
+    <!-- Falar com o advogado -->
+    <div class="wz-step" id="wz-falar" hidden>
+      <p class="wz-section">Contato</p>
+      <h2 class="wz-q" id="falar-title" tabindex="-1">Falar com o advogado</h2>
+      <p>Seus dados e documentos já foram recebidos sob o protocolo <strong class="prot"></strong>. Escreva dizendo o que quer esclarecer; não é preciso repetir as informações.</p>
+      <div class="btns">
+        <a class="btn" id="falar-email" href="mailto:alexandre@dickelcanova.com">Escrever por e-mail</a>
+        <a class="btn ghost" id="falar-whats" href="#" rel="noopener" hidden>WhatsApp</a>
+        <button class="btn link" type="button" id="falar-voltar">← Voltar à proposta</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="cols">
+      <div>
+        <p><strong>Regularização de Imóveis</strong></p>
+        <p>Regularização de imóveis comprados e não registrados, com foco na adjudicação compulsória extrajudicial. Atendimento por advogado inscrito na OAB.</p>
+      </div>
+      <div>
+        <p><strong>Conteúdo</strong></p>
+        <ul>
+          <li><a href="adjudicacao.html">Como funciona</a></li>
+          <li><a href="sobre-o-procedimento.html">Sobre o procedimento</a></li>
+          <li><a href="quem-somos.html">Quem somos</a></li>
+          <li><a href="perguntas.html">Perguntas frequentes</a></li>
+          <li><a href="diagnostico.html">Diagnóstico</a></li>
+        </ul>
+      </div>
+      <div>
+        <p><strong>Informações legais</strong></p>
+        <ul>
+          <li><a href="privacidade.html">Política de privacidade</a></li>
+          <li><a href="termos.html">Termos de uso</a></li>
+          <li><a href="acessibilidade.html">Acessibilidade</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="legal-line">Responsável técnico: Alexandre Dickel Canova, advogado, OAB/RS 127.163, Porto Alegre/RS. Conteúdo de caráter exclusivamente informativo, nos termos do Provimento nº 205/2021 do Conselho Federal da OAB. Não constitui consulta jurídica nem promessa de resultado. Este site não usa cookies nem rastreadores. Atualizado em 2026-10-07.</p>
+  </div>
+</footer>
+<script src="assets/js/site.js" defer></script>
+<script src="assets/js/config.js" defer></script>
+<script src="assets/js/diagnostico.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://aledcanova.github.io/regularizacao-de-imoveis/sitemap.xml
