@@ -334,3 +334,27 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 .fecho .btn.link { min-height: 0; padding: 6px 0; font-size: .92rem; }
 @media (max-width: 600px) { .next { padding: 28px 22px; } .btn.cta { width: 100%; padding: 16px 20px; } .fecho .btn:not(.link) { width: 100%; } }
 @media print { .fecho { display: none !important; } }
+
+/* Proposta: oferta em destaque. Pagamento: meios lado a lado. */
+.offer.destaque { padding: 38px 36px; border-radius: var(--radius); background: var(--brand); box-shadow: var(--shadow); gap: 0; }
+.offer.destaque .eyebrow { color: rgba(255,255,255,.7); margin: 0 0 12px; }
+.offer.destaque h3 { color: #fff; font-size: clamp(1.4rem, 3vw, 1.75rem); }
+.offer.destaque .price { color: #fff; font-size: clamp(2.6rem, 6vw, 3.2rem); margin: 14px 0 4px; line-height: 1.05; }
+.offer.destaque .cond { margin: 0; color: rgba(255,255,255,.76); font-size: .95rem; }
+.offer.destaque .checks { list-style: none; margin: 24px 0 28px; padding: 22px 0 0; border-top: 1px solid rgba(255,255,255,.18); display: grid; gap: 12px; color: #fff; font-size: 1rem; }
+.offer.destaque .checks li { position: relative; margin: 0; padding-left: 30px; }
+.offer.destaque .checks li::before { content: "✓"; position: absolute; left: 0; top: 2px; width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.16); font-size: .78rem; line-height: 20px; text-align: center; }
+.offer.destaque .micro { margin: 14px 0 0; font-size: .92rem; color: rgba(255,255,255,.72); }
+.selo-mp { max-width: none; border: 0; padding: 0; margin: 18px 0 0; gap: 12px; font-size: .88rem; }
+.selo-mp img { height: 22px; }
+.pay-title { margin-top: 36px; }
+.pay-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin: 16px 0 8px; }
+.pay { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 28px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.pay[hidden] { display: none; }
+.pay .eyebrow { margin: 0; }
+.pay h4 { margin: 0; font-family: var(--serif); font-weight: 500; font-size: 1.25rem; line-height: 1.25; color: var(--ink); }
+.pay p { margin: 0; color: var(--ink-3); font-size: .97rem; }
+.pay .pixcode { width: 100%; margin: 6px 0 4px; }
+.pay .btn { margin-top: auto; width: 100%; }
+.pay .selo-mp { margin-top: 6px; }
+@media (max-width: 600px) { .offer.destaque { padding: 28px 22px; } .pay { padding: 22px; } }

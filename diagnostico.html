@@ -189,18 +189,21 @@
           </ul>
           <button class="btn" type="button" data-produto="procedimento">Iniciar o processo de regularização</button>
         </div>
-        <div class="card offer">
+        <div class="offer destaque">
+          <p class="eyebrow">Sua proposta · Protocolo <span class="prot"></span></p>
           <h3>Consulta com análise documental</h3>
           <p class="price">R$ 600</p>
-          <p class="muted">Pagamento único. O valor é abatido se você contratar o procedimento em até 30 dias.</p>
-          <ul>
+          <p class="cond">Pagamento único. O valor é abatido se você contratar o procedimento em até 30 dias.</p>
+          <ul class="checks">
             <li>Exame do contrato, dos comprovantes e da matrícula pelo advogado</li>
             <li>Orientação definitiva por escrito, revisada e assinada pelo responsável técnico, em até 24 horas</li>
             <li>Proposta detalhada do procedimento: o que será feito, como e por qual valor</li>
           </ul>
-          <button class="btn" type="button" data-produto="analise">Contratar a consulta</button>
+          <button class="btn cta" type="button" data-produto="analise">Contratar a consulta <span aria-hidden="true">→</span></button>
+          <p class="micro">Na próxima tela você lê o contrato completo antes de aceitar.</p>
         </div>
       </div>
+      <p class="selo-mp"><img src="assets/img/mercado-pago.png" alt="Mercado Pago" width="107" height="28"><span>Pagamento processado com segurança pela plataforma Mercado Pago.</span></p>
       <p class="muted">Os valores são de honorários advocatícios. Emolumentos de cartório, certidões, despesas de notificação e o imposto de transmissão (ITBI) são pagos por você diretamente aos órgãos, e são estimados na orientação.</p>
       <div class="humano">
         <p><strong>Prefere falar com uma pessoa?</strong> O advogado responde em até 24 horas, em dias úteis. Seus dados já estão no protocolo; não é preciso repetir.</p>
@@ -283,6 +286,7 @@
           <button class="btn link" type="button" id="voltar-proposta">← Voltar à proposta</button>
           <button class="btn" type="submit" id="contratar">Aceitar e ir para o pagamento</button>
         </div>
+        <p class="selo-mp"><img src="assets/img/mercado-pago.png" alt="Mercado Pago" width="107" height="28"><span>Pagamento processado com segurança pela plataforma Mercado Pago.</span></p>
       </form>
     </div>
 
@@ -293,18 +297,23 @@
         <h2 id="pag-title" tabindex="-1">Falta só o pagamento.</h2>
         <p>Protocolo <strong class="prot"></strong> · <span id="pag-produto"></span> · <strong id="pag-valor"></strong></p>
       </div>
-      <div id="pag-pix" hidden>
-        <h3>Pix</h3>
-        <p>Copie o código abaixo e cole no aplicativo do seu banco, na opção "Pix copia e cola". O valor já vem preenchido.</p>
-        <label class="sr-only" for="pix-code">Código Pix copia e cola</label>
-        <textarea class="pixcode" id="pix-code" readonly rows="4"></textarea>
-        <div class="btns"><button class="btn" type="button" id="pix-copiar">Copiar código Pix</button></div>
-      </div>
-      <div id="pag-cartao" hidden>
-        <h3>Pagamento pelo Mercado Pago</h3>
-        <p>Você paga por Pix ou cartão na página do Mercado Pago, que processa a operação. Os dados do cartão não passam por este site. Use no pagamento o mesmo nome e e-mail informados aqui, para a confirmação ser automática.</p>
-        <div class="btns"><a class="btn" id="cartao-link" href="#" target="_blank" rel="noopener">Pagar com Mercado Pago</a></div>
-        <p class="selo-mp"><img src="assets/img/mercado-pago.png" alt="Mercado Pago" width="107" height="28"><span>Pagamento seguro, processado pelo Mercado Pago</span></p>
+      <h3 class="pay-title">Escolha como pagar</h3>
+      <div class="pay-grid">
+        <div class="pay" id="pag-pix" hidden>
+          <p class="eyebrow">Pix</p>
+          <h4>Copie e cole no aplicativo do seu banco</h4>
+          <p>Use a opção "Pix copia e cola". O valor e o protocolo já vêm preenchidos.</p>
+          <label class="sr-only" for="pix-code">Código Pix copia e cola</label>
+          <textarea class="pixcode" id="pix-code" readonly rows="4"></textarea>
+          <button class="btn" type="button" id="pix-copiar">Copiar código Pix</button>
+        </div>
+        <div class="pay" id="pag-cartao" hidden>
+          <p class="eyebrow">Cartão de crédito ou boleto</p>
+          <h4>Pague na página do Mercado Pago</h4>
+          <p>Os dados do cartão não passam por este site. Use o mesmo nome e e-mail informados aqui, para agilizar a confirmação.</p>
+          <a class="btn" id="cartao-link" href="#" target="_blank" rel="noopener">Pagar com Mercado Pago <span aria-hidden="true">→</span></a>
+          <p class="selo-mp"><img src="assets/img/mercado-pago.png" alt="Mercado Pago" width="107" height="28"><span>Processado com segurança pelo Mercado Pago.</span></p>
+        </div>
       </div>
       <div class="note" id="pag-email" hidden>
         <p>As instruções de pagamento serão enviadas ao seu e-mail.</p>

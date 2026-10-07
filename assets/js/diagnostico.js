@@ -598,8 +598,8 @@
   function showPagamento(p) {
     $('pag-produto').textContent = p.nome;
     $('pag-valor').textContent = brl(p.agora);
-    // Com link do Mercado Pago, ele é o meio de pagamento (a confirmação chega por e-mail e a rotina lê); o Pix direto fica de reserva
-    var temCartao = !!p.link, temPix = !temCartao && !!(CFG.pix_chave && CFG.pix_nome);
+    // Pix direto (código copia e cola) e, havendo link, cartão ou boleto pelo Mercado Pago, lado a lado
+    var temCartao = !!p.link, temPix = !!(CFG.pix_chave && CFG.pix_nome);
     if (temPix) $('pix-code').value = pixCode(p.agora, caso.protocolo.replace(/[^A-Za-z0-9]/g, '').slice(0, 25));
     $('pag-pix').hidden = !temPix;
     if (temCartao) $('cartao-link').href = p.link;
