@@ -314,3 +314,23 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 /* Selo do operador de pagamento: só na tela de pagamento, depois do aceite do contrato */
 .selo-mp { display: flex; align-items: center; gap: 14px; margin: 22px 0 0; padding: 14px 18px; border: 1px solid var(--line); border-radius: 12px; font-size: .9rem; color: var(--ink-3); max-width: 420px; }
 .selo-mp img { height: 28px; width: auto; flex: none; }
+
+/* Resultado do diagnóstico: chamada principal em destaque, ações secundárias discretas */
+.next { margin-top: 28px; padding: 38px 36px; border: 0; border-radius: var(--radius); background: var(--brand); box-shadow: var(--shadow); }
+.next .eyebrow { color: rgba(255,255,255,.7); margin: 0 0 10px; }
+.next h3 { margin: 0 0 12px; color: #fff; font-size: clamp(1.5rem, 3.2vw, 1.95rem); line-height: 1.2; }
+.next p { color: rgba(255,255,255,.84); margin: 0; max-width: 60ch; }
+.next .checks { list-style: none; margin: 22px 0 28px; padding: 0; display: grid; gap: 10px; color: #fff; }
+.next .checks li { position: relative; margin: 0; padding-left: 30px; }
+.next .checks li::before { content: "✓"; position: absolute; left: 0; top: 1px; width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,.16); color: #fff; font-size: .78rem; line-height: 20px; text-align: center; }
+.btn.cta { min-height: 60px; padding: 18px 36px; background: #fff; border-color: #fff; color: var(--brand); font-weight: 600; font-size: 1.08rem; }
+.btn.cta:hover { color: var(--brand); box-shadow: 0 12px 28px -10px rgba(0,0,0,.45); }
+.next .micro { margin-top: 14px; font-size: .92rem; color: rgba(255,255,255,.72); }
+.next .trilha { list-style: none; counter-reset: t; display: flex; flex-wrap: wrap; gap: 8px 26px; margin: 26px 0 0; padding: 20px 0 0; border-top: 1px solid rgba(255,255,255,.18); font-size: .9rem; color: rgba(255,255,255,.78); }
+.next .trilha li { counter-increment: t; margin: 0; display: flex; align-items: center; gap: 8px; }
+.next .trilha li::before { content: counter(t); width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(255,255,255,.45); font-size: .78rem; line-height: 20px; text-align: center; }
+.fecho { margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
+.fecho .acoes { margin: 0; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.fecho .btn.link { min-height: 0; padding: 6px 0; font-size: .92rem; }
+@media (max-width: 600px) { .next { padding: 28px 22px; } .btn.cta { width: 100%; padding: 16px 20px; } .fecho .btn:not(.link) { width: 100%; } }
+@media print { .fecho { display: none !important; } }

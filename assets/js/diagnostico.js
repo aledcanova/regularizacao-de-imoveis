@@ -346,7 +346,7 @@
 
   $('refazer').addEventListener('click', function () { a = {}; result = null; renderQuestion(ORDER[0]); swap(stage, null); });
   $('imprimir').addEventListener('click', function () { window.print(); });
-  $('abrir-envio').addEventListener('click', function () { swap(pEnvio, $('envio-title')); });
+  ['abrir-envio', 'abrir-envio-2'].forEach(function (id) { $(id).addEventListener('click', function () { swap(pEnvio, $('envio-title')); }); });
   $('voltar-resultado').addEventListener('click', function () { swap(pResult, $('verdict-title')); });
 
   // ---------- Passo 1: dados e documentos ----------
@@ -399,29 +399,54 @@
   }
   // Com endpoint (script do Google): JSON { form, campos, arquivos } em text/plain, que não exige pré-consulta do navegador.
   // Sem endpoint: formulário do Netlify, como antes.
+  var anexosPendentes = false;
+  function mandar(body) {
+    var ctl = window.AbortController ? new AbortController() : null;
+    var t = ctl ? setTimeout(function () { ctl.abort(); }, 90000) : 0;
+    return fetch(CFG.endpoint, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(body), signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { clearTimeout(t); if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
+      .then(function (txt) {
+        var j; try { j = JSON.parse(txt); } catch (e) { throw new Error('resposta'); }
+        if (!j || !j.ok) { var er = new Error('recusado'); er.codigo = j && j.erro; throw er; }
+      }, function (e) { clearTimeout(t); throw e; });
+  }
   function enviar(fd) {
     if (!CFG.endpoint) return fetch('/', { method: 'POST', body: fd }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); });
-    var campos = {}, pend = [], arquivos = [];
+    var campos = {}, arquivos = [], files = [];
     fd.forEach(function (v, k) {
       if (k === 'form-name') return;
       if (typeof v === 'string') campos[k] = v;
-      else if (v && v.size) pend.push(b64(v).then(function (d) { arquivos.push({ campo: k, nome: v.name, tipo: v.type, dados: d }); }));
+      else if (v && v.size) files.push([k, v]);
     });
-    return Promise.all(pend).then(function () {
-      return fetch(CFG.endpoint, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ form: fd.get('form-name'), campos: campos, arquivos: arquivos }) });
-    }).then(function (r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    }).then(function (j) { if (!j || !j.ok) throw new Error('recusado: ' + (j && j.erro)); });
+    var form_ = fd.get('form-name');
+    // Lê os arquivos; se a leitura ou o envio com anexos falhar, envia os dados sem eles para não perder o caso.
+    var lidos = Promise.all(files.map(function (kv) {
+      return b64(kv[1]).then(function (d) { arquivos.push({ campo: kv[0], nome: kv[1].name, tipo: kv[1].type, dados: d }); });
+    }));
+    function semAnexos(motivo) {
+      if (!files.length) throw motivo;
+      if (window.console) console.error('envio com anexos falhou:', motivo && (motivo.codigo || motivo.message));
+      campos.anexos_pendentes = files.map(function (kv) { return kv[1].name; }).join('; ');
+      return mandar({ form: form_, campos: campos, arquivos: [] }).then(function () { anexosPendentes = true; });
+    }
+    return lidos.then(function () { return mandar({ form: form_, campos: campos, arquivos: arquivos }); })
+      .catch(function (e) {
+        if (e && e.codigo && e.codigo !== 'tamanho' && e.codigo !== 'servidor') throw e;
+        return semAnexos(e);
+      });
   }
   function post(fd, btn, rotulo, errBox, ok) {
     errBox.hidden = true;
     btn.disabled = true; btn.textContent = 'Enviando…';
     enviar(fd).then(function () {
       ok();
-    }).catch(function () {
-      errBox.textContent = 'Não foi possível enviar agora. Verifique a conexão e tente de novo. Se o problema continuar, escreva para ' + (CFG.email || 'o e-mail da página de contato') + '.';
+    }).catch(function (e) {
+      var cod = (e && (e.codigo || (e.name === 'AbortError' ? 'tempo' : e.message))) || 'rede';
+      if (window.console) console.error('envio falhou:', cod);
+      var msg = cod === 'limite' ? 'Recebemos muitos envios nesta hora. Tente de novo em alguns minutos ou escreva para '
+        : 'Não foi possível enviar agora. Verifique a conexão e tente de novo. Se o problema continuar, escreva para ';
+      errBox.textContent = msg + (CFG.email || 'o e-mail da página de contato') + '. (código: ' + String(cod).slice(0, 40) + ')';
       errBox.hidden = false;
     }).then(function () { btn.disabled = false; btn.textContent = rotulo; });
   }
@@ -446,6 +471,11 @@
     post(fd, $('enviar'), 'Enviar e ver a proposta', $('e-envio'), function () {
       caso = { protocolo: prot, nome: $('f-nome').value.trim(), email: $('f-email').value.trim() };
       setProt(prot);
+      if (anexosPendentes && !$('aviso-anexos')) {
+        var av = el('p', 'Seus dados foram recebidos, mas não foi possível receber os arquivos agora. Envie-os para ' + CFG.email + ' informando o protocolo ' + prot + '.', 'err');
+        av.id = 'aviso-anexos'; av.setAttribute('role', 'status');
+        $('offer-procedimento').parentNode.parentNode.insertBefore(av, $('offer-procedimento').parentNode);
+      }
       // O contrato de regularização completa é o da adjudicação compulsória: só é oferecido quando o diagnóstico aponta essa via
       // Simples: contratação direta. Intermediário: só se houver preço da faixa em config. Complexo: consulta e atendimento do advogado.
       var fxa = result ? result.faixa : null, precoProc = 0;
