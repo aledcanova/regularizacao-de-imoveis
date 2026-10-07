@@ -358,3 +358,21 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 .pay .btn { margin-top: auto; width: 100%; }
 .pay .selo-mp { margin-top: 6px; }
 @media (max-width: 600px) { .offer.destaque { padding: 28px 22px; } .pay { padding: 22px; } }
+
+/* Identidade e acabamento: cabeçalho em uma linha, marca vetorial, cantos discretos, sem animação de entrada */
+.site-header { background: #fff; backdrop-filter: none; }
+.site-header .wrap { min-height: 72px; gap: 32px; }
+.brand { gap: 12px; flex: none; }
+.brand-mark { width: 34px; height: 34px; border-radius: 0; background: none; display: block; flex: none; }
+.brand strong { font-size: 1.18rem; letter-spacing: 0; line-height: 1; }
+.nav { gap: 2px; }
+.nav a { padding: 8px 12px; font-size: .93rem; color: var(--ink-2); }
+.nav a:not(.cta)[aria-current="page"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--brand); border-radius: 0; }
+.nav a.cta, .nav-toggle, .btn, .indice a { border-radius: 8px; }
+.nav a.cta { margin-left: 16px; padding: 11px 20px; }
+.hero .wrap > * { animation: none; }
+.btn { min-height: 50px; padding: 14px 26px; }
+.btn.cta { border-radius: 8px; }
+.card, .verdict, .next, .offer.destaque, .pay, .fecho { border-radius: 10px; }
+@media (max-width: 1020px) { .nav { top: 72px; } .nav a:not(.cta)[aria-current="page"] { box-shadow: none; } }
+@media (max-width: 420px) { .brand strong { font-size: 1.02rem; } .brand-mark { width: 30px; height: 30px; } }
