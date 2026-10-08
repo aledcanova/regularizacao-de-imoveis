@@ -16,6 +16,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="assets/img/icone-32.png?v=2">
 <link rel="apple-touch-icon" href="assets/img/icone-180.png?v=2">
 <link rel="stylesheet" href="assets/css/style.css">
+
 </head>
 <body>
 <a class="skip" href="#conteudo">Pular para o conteúdo</a>
@@ -109,12 +110,13 @@
         </div>
         <div class="field">
           <label for="f-email">E-mail</label>
-          <input type="email" id="f-email" name="email" autocomplete="email" inputmode="email" required aria-describedby="e-email">
-          <p class="err" id="e-email" hidden>Informe um e-mail válido. É por ele que você recebe o contrato e a análise.</p>
+          <input type="email" id="f-email" name="email" autocomplete="email" inputmode="email" aria-describedby="e-email h-contato">
+          <p class="err" id="e-email" hidden>Informe um e-mail válido ou um WhatsApp com DDD.</p>
         </div>
         <div class="field">
-          <label for="f-tel">Telefone <span class="opt">(opcional)</span></label>
-          <input type="tel" id="f-tel" name="telefone" autocomplete="tel" inputmode="tel">
+          <label for="f-tel">WhatsApp ou telefone, com DDD</label>
+          <input type="tel" id="f-tel" name="telefone" autocomplete="tel" inputmode="tel" aria-describedby="h-contato">
+          <p class="hint" id="h-contato">Basta um dos dois: e-mail ou WhatsApp.</p>
         </div>
         <div class="row2">
           <div class="field">
@@ -160,9 +162,7 @@
           <span>Li a <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a> e os <a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a> e solicito a proposta de honorários para o meu caso, com o tratamento dos dados e documentos que estou enviando para essa finalidade.</span>
         </label>
         <p class="err" id="e-c1" hidden>É preciso marcar esta opção para enviar.</p>
-        <input type="hidden" name="consentimento_transferencia" id="f-c2" value="sim">
-
-        <div class="quem-mini"><img src="assets/img/alexandre-dickel-canova.jpg" alt="" width="56" height="56" loading="lazy"><p><strong>Dr. Alexandre Dickel Canova</strong> · Advogado · OAB/RS 127.163<br>É quem examina os seus documentos e assina a orientação. <a href="quem-somos.html" target="_blank" rel="noopener">Quem atende</a></p></div>
+                <div class="quem-mini"><img src="assets/img/alexandre-dickel-canova.jpg" alt="" width="56" height="56" loading="lazy"><p><strong>Dr. Alexandre Dickel Canova</strong> · Advogado · OAB/RS 127.163<br>É quem examina os seus documentos e assina a orientação. <a href="quem-somos.html" target="_blank" rel="noopener">Quem atende</a></p></div>
         <p class="err" id="e-envio" role="alert" hidden></p>
         <div class="wz-nav">
           <button class="btn link" type="button" id="voltar-resultado">← Voltar ao resultado</button>
@@ -239,6 +239,12 @@
         <input type="hidden" name="email" id="k-email">
         <input type="hidden" name="aceito_em" id="k-quando">
         <p class="hp" aria-hidden="true"><label>Não preencha este campo <input name="site" tabindex="-1" autocomplete="off"></label></p>
+        <div class="field" id="k-email-campo" hidden>
+          <label for="k-email-vis">E-mail</label>
+          <input type="email" id="k-email-vis" autocomplete="email" inputmode="email" aria-describedby="e-kemail h-kemail">
+          <p class="hint" id="h-kemail">É por ele que você recebe a cópia do contrato e a orientação.</p>
+          <p class="err" id="e-kemail" hidden>Informe um e-mail válido.</p>
+        </div>
         <div class="field">
           <label for="k-cpf">CPF do contratante</label>
           <input type="text" id="k-cpf" name="cpf" inputmode="numeric" autocomplete="off" maxlength="14" required aria-describedby="e-cpf h-cpf">

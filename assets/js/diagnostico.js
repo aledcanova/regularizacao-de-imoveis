@@ -363,7 +363,8 @@
     var first = null;
     function chk(id, errId, bad, msg) { if (setErr($(id), errId, bad, msg) && !first) first = $(id); }
     chk('f-nome', 'e-nome', $('f-nome').value.trim().split(/\s+/).length < 2);
-    chk('f-email', 'e-email', !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test($('f-email').value.trim()));
+    var em = $('f-email').value.trim(), emOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em), telOk = $('f-tel').value.replace(/\D/g, '').length >= 10;
+    chk('f-email', 'e-email', em ? !emOk : !telOk);
     chk('f-cidade', 'e-cidade', $('f-cidade').value.trim().length < 2);
     chk('f-uf', 'e-uf', !$('f-uf').value);
     var total = 0, tipoRuim = false;
@@ -520,6 +521,7 @@
       $('ct-procedimento').hidden = produto !== 'procedimento';
       $('k-resumo').textContent = brl(p.total) + (p.agora !== p.total ? ' (entrada de ' + brl(p.agora) + ' agora)' : '');
       $('k-aceite').checked = false;
+      $('k-email-campo').hidden = !!caso.email;
       swap(pContrato, $('contrato-title'));
     });
   });
@@ -573,6 +575,11 @@
     $('k-agora').value = p.agora;
     $('k-versao').value = CFG.versao_contrato || '';
     $('k-nome').value = caso.nome;
+    if (!caso.email) {
+      var ev2 = $('k-email-vis').value.trim();
+      if (setErr($('k-email-vis'), 'e-kemail', !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(ev2))) { $('k-email-vis').focus(); return; }
+      caso.email = ev2;
+    }
     $('k-email').value = caso.email;
     $('k-quando').value = new Date().toISOString();
     post(new FormData(kform), $('contratar'), 'Aceitar e ir para o pagamento', $('e-contratar'), function () { showPagamento(p); });
