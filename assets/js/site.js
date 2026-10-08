@@ -21,5 +21,6 @@
 (function () {
   var z = document.querySelector('.zap'); if (!z) return;
   var h1 = document.querySelector('h1');
-  z.href += '?text=' + encodeURIComponent('Olá. Vim pelo site, página "' + (h1 ? h1.textContent.trim() : document.title) + '".');
+  var an = ''; try { if (sessionStorage.getItem('origem')) an = ' (anúncio)'; } catch (e) {}
+  z.href += '?text=' + encodeURIComponent('Olá. Vim pelo site' + an + ', página "' + (h1 ? h1.textContent.trim() : document.title) + '".');
 })();

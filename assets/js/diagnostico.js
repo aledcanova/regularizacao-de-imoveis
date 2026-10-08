@@ -120,7 +120,7 @@
     var q = Q[k], vis = visible(), idx = vis.indexOf(k);
     bar.value = Math.round((idx / vis.length) * 100);
     var secs = ['A compra', 'O pagamento', 'O imóvel', 'O vendedor', 'Situação atual'];
-    count.textContent = 'Etapa ' + (secs.indexOf(q.s) + 1) + ' de ' + secs.length;
+    count.textContent = 'Etapa ' + (secs.indexOf(q.s) + 1) + ' de ' + secs.length + (secs.indexOf(q.s) === secs.length - 1 ? ' · últimas perguntas' : '');
 
     var step = el('div', null, 'wz-step');
     step.appendChild(el('p', q.s, 'wz-section'));
@@ -269,8 +269,8 @@
     if (a.onus === 'ns') at.push('Verificar na matrícula se existe hipoteca, penhora, alienação fiduciária (imóvel em garantia ao banco) ou indisponibilidade.');
     if (a.vsit === 'morto') at.push('Vendedor falecido: são notificados os herdeiros ou, havendo inventário, o inventariante.');
     if (a.vsit === 'sumiu') at.push('Vendedor em lugar desconhecido: a notificação por aviso público (edital) é possível, depois de demonstradas as tentativas de localização.');
-    if (a.vsit === 'extinta') at.push('Empresa encerrada: a notificação vai ao liquidante ou ao último administrador conhecido; se não localizados, por edital. Em caso de falência, o contrato precisa ser anterior a ela.');
-    if (a.vsit === 'exterior') at.push('Vendedor residente no exterior sem procurador com poderes: a notificação pode ser feita por edital.');
+    if (a.vsit === 'extinta') at.push('Empresa encerrada: a notificação vai ao liquidante ou ao último administrador conhecido; se não localizados, por aviso público (edital). Em caso de falência, o contrato precisa ser anterior a ela.');
+    if (a.vsit === 'exterior') at.push('Vendedor residente no exterior sem procurador com poderes: a notificação pode ser feita por aviso público (edital).');
     if (a.vsit === 'nunca') at.push('O vendedor ainda não foi procurado. Se ele concordar em assinar, a escritura comum tende a ser mais simples.');
     if (a.posse === 'terceiro') at.push('Há outra pessoa ocupando o imóvel sem autorização: a regularização do registro não resolve, por si, a retomada da posse.');
     if (a.proc === 'ns') at.push('Confirmar, por certidões dos distribuidores forenses, que não há processo sobre o contrato.');
@@ -299,8 +299,8 @@
   }
   var FAIXAS = {
     simples: ['Caso simples', 'Contrato direto com o dono registrado, preço quitado com prova e matrícula sem pendências conhecidas.'],
-    intermediario: ['Caso intermediário', 'Há pontos que pedem trabalho documental adicional antes do pedido, como cessões, notificação por aviso público (edital) ou informações a confirmar na matrícula.'],
-    complexo: ['Caso complexo', 'Envolve sucessão, empresa encerrada, ônus ou outro ponto que exige análise jurídica individual antes de qualquer procedimento.']
+    intermediario: ['Caso com pontos a conferir', 'Há pontos que pedem trabalho documental adicional antes do pedido, como cessões, notificação por aviso público (edital) ou informações a confirmar na matrícula.'],
+    complexo: ['Caso que pede análise individual', 'Envolve sucessão, empresa encerrada, ônus ou outro ponto que exige análise jurídica individual antes de qualquer procedimento.']
   };
   var TIMELINE = [
     ['Consulta de viabilidade', 'O advogado examina contrato, pagamento e matrícula.'],
@@ -328,7 +328,7 @@
     $('verdict-text').textContent = result.texto;
     var tec = $('verdict-tecnico');
     tec.hidden = !result.tecnico;
-    if (result.tecnico) tec.textContent = 'Nome jurídico: ' + result.tecnico + '.';
+    if (result.tecnico) tec.textContent = 'Nome do procedimento: ' + result.tecnico + '.';
     var m = $('mapa'); m.textContent = '';
     if (result.faixa) {
       var fx = el('div', null, 'faixa faixa-' + result.faixa);
@@ -372,7 +372,7 @@
       var f = $(id).files && $(id).files[0];
       if (f) { total += f.size; if (!/\.(pdf|jpe?g|png|heic)$/i.test(f.name)) tipoRuim = true; }
     });
-    var arqMsg = tipoRuim ? 'Envie apenas arquivos PDF, JPG, PNG ou HEIC.' : 'Os arquivos somam mais de 8 MB. Remova algum; o restante pode ser enviado depois, por e-mail.';
+    var arqMsg = tipoRuim ? 'Envie apenas arquivos PDF, JPG, PNG ou HEIC.' : 'Os arquivos somam mais de 8 MB. Remova algum; o restante pode ser enviado depois.';
     if (setErr(null, 'e-arq', tipoRuim || total > MAX, arqMsg) && !first) first = $('f-contrato');
     chk('f-c1', 'e-c1', !$('f-c1').checked);
     return first;
