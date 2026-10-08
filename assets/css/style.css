@@ -437,3 +437,9 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 .pay .selo-mp { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
 .pay .selo-mp img { height: 24px; width: auto; }
 .pay .pixcode { min-height: 0; }
+
+/* Aviso de triagem: o resultado do diagnóstico não é consulta */
+.triagem { font-size: .95rem; color: var(--ink-3); max-width: 62ch; margin: 14px 0 0; }
+.triagem + .triagem { margin-top: 6px; }
+.hero .lead + .triagem { margin-top: 18px; }
+.verdict .triagem { font-size: .9rem; }
