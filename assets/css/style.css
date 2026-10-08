@@ -376,3 +376,13 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 .card, .verdict, .next, .offer.destaque, .pay, .fecho { border-radius: 10px; }
 @media (max-width: 1020px) { .nav { top: 72px; } .nav a:not(.cta)[aria-current="page"] { box-shadow: none; } }
 @media (max-width: 420px) { .brand strong { font-size: 1.02rem; } .brand-mark { width: 30px; height: 30px; } }
+
+/* Quem somos: mesmo formato da plataforma de divórcio e inventário */
+.profile { display: grid; grid-template-columns: 1fr 2fr; gap: 48px; align-items: start; }
+.profile .who { border-top: 1px solid var(--ink); padding-top: 24px; }
+.profile .who strong { display: block; font-family: var(--serif); font-weight: 500; font-size: 1.5rem; line-height: 1.2; }
+.profile .who span { display: block; color: var(--ink-3); margin-top: 8px; font-size: .95rem; }
+.facts { list-style: none; padding: 0; margin: 28px 0 0; }
+.facts li { padding: 16px 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: 11em 1fr; gap: 16px; }
+.facts li span:first-child { font-size: .76rem; text-transform: uppercase; letter-spacing: .14em; color: var(--ink-3); padding-top: 4px; }
+@media (max-width: 800px) { .profile { grid-template-columns: 1fr; gap: 28px; } .facts li { grid-template-columns: 1fr; gap: 4px; } }
