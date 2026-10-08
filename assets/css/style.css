@@ -443,3 +443,7 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 .triagem + .triagem { margin-top: 6px; }
 .hero .lead + .triagem { margin-top: 18px; }
 .verdict .triagem { font-size: .9rem; }
+
+/* Diagnóstico na mesma largura do site de divórcio e inventário (1040 px) */
+.wizard .wrap.narrow { max-width: 1040px; }
+.wizard p { max-width: none; }
