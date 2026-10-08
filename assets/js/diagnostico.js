@@ -16,6 +16,8 @@
       ['nao', 'Não'], ['sim', 'Sim'], ['ns', 'Não sei'] ] },
     quem: { s: 'A compra', w: function (a) { return a.doc !== 'nada'; }, t: 'Quem fez a compra?', o: [
       ['eu', 'Eu (ou eu e meu cônjuge)'], ['herdei', 'Um familiar já falecido; sou herdeiro'] ] },
+    fin: { s: 'A compra', h: 'É o caso do "contrato de gaveta" de imóvel comprado com financiamento do banco.', w: function (a) { return a.doc !== 'nada'; }, t: 'O imóvel estava financiado em nome do vendedor quando você comprou?', o: [
+      ['nao', 'Não'], ['quitado', 'Sim, e o financiamento já foi quitado'], ['aberto', 'Sim, e o financiamento ainda não foi quitado'], ['ns', 'Não sei'] ] },
     quit: { s: 'O pagamento', w: function (a) { return a.doc !== 'nada'; }, t: 'O preço foi pago?', o: [
       ['total', 'Sim, integralmente'], ['parte', 'Em parte'], ['nao', 'Não'] ] },
     prova: { s: 'O pagamento', h: 'Escolha a mais forte que você tiver.', w: function (a) { return a.quit === 'total'; }, t: 'Qual é a melhor prova do pagamento que você tem?', o: [
@@ -58,7 +60,7 @@
     if (a.vtipo === 'pj') return v !== 'morto' && v !== 'exterior';
     return v !== 'extinta';
   };
-  var ORDER = ['doc', 'tipo', 'arrep', 'quem', 'quit', 'prova', 'imovel', 'matricula', 'titular', 'cadeia', 'onus', 'vtipo', 'vsit', 'proc', 'posse', 'tempo'];
+  var ORDER = ['doc', 'tipo', 'arrep', 'quem', 'fin', 'quit', 'prova', 'imovel', 'matricula', 'titular', 'cadeia', 'onus', 'vtipo', 'vsit', 'proc', 'posse', 'tempo'];
 
   var stage = document.getElementById('wz-stage');
   if (!stage) return;
@@ -145,7 +147,7 @@
       nav.appendChild(v);
     } else nav.appendChild(el('span'));
     step.appendChild(nav);
-    if (idx === 0) step.appendChild(el('p', 'Nada do que você responder é enviado ou gravado nesta etapa. O envio só acontece no fim, se você quiser.', 'wz-priv'));
+    step.appendChild(el('p', 'O resultado desta etapa é apenas uma classificação informativa baseada nas respostas fornecidas. Ele não constitui orientação ou consulta jurídica. A análise jurídica individualizada somente ocorre após a contratação da consulta e é realizada pelo advogado responsável.', 'wz-priv'));
 
     var old = stage.firstChild;
     function enter() {
@@ -269,6 +271,9 @@
     if (a.onus === 'ns') at.push('Verificar na matrícula se existe hipoteca, penhora, alienação fiduciária (imóvel em garantia ao banco) ou indisponibilidade.');
     if (a.vsit === 'morto') at.push('Vendedor falecido: são notificados os herdeiros ou, havendo inventário, o inventariante.');
     if (a.vsit === 'sumiu') at.push('Vendedor em lugar desconhecido: a notificação por aviso público (edital) é possível, depois de demonstradas as tentativas de localização.');
+    if (a.fin === 'aberto') at.push('Imóvel financiado com o financiamento ainda em aberto: enquanto houver garantia registrada em favor do banco, a situação tem regras próprias e precisa de análise individual antes de qualquer pedido.');
+    if (a.fin === 'quitado') at.push('Imóvel que era financiado: convém conferir se a baixa da garantia do banco foi registrada na matrícula.');
+    if (a.fin === 'ns') at.push('Convém conferir na matrícula se há financiamento registrado em nome do vendedor.');
     if (a.vsit === 'extinta') at.push('Empresa encerrada: a notificação vai ao liquidante ou ao último administrador conhecido; se não localizados, por aviso público (edital). Em caso de falência, o contrato precisa ser anterior a ela.');
     if (a.vsit === 'exterior') at.push('Vendedor residente no exterior sem procurador com poderes: a notificação pode ser feita por aviso público (edital).');
     if (a.vsit === 'nunca') at.push('O vendedor ainda não foi procurado. Se ele concordar em assinar, a escritura comum tende a ser mais simples.');
@@ -291,10 +296,10 @@
   function faixa(r) {
     if (r.cod !== 'ADJ' && r.cod !== 'ADJ_PENDENCIAS') return null;
     var complexo = r.cod === 'ADJ_PENDENCIAS' || a.vsit === 'morto' || a.vsit === 'extinta' || a.onus === 'sim' ||
-      a.imovel === 'rural' || a.posse === 'terceiro' || a.quem === 'herdei';
+      a.imovel === 'rural' || a.posse === 'terceiro' || a.quem === 'herdei' || a.fin === 'aberto';
     if (complexo) return 'complexo';
     var inter = a.tipo === 'cessao' || a.tipo === 'permuta' || a.titular === 'outro' || a.titular === 'ns' || a.prova === 'indireta' ||
-      a.matricula === 'ns' || a.onus === 'ns' || a.arrep === 'ns' || a.proc === 'ns' || a.vsit === 'sumiu' || a.vsit === 'exterior';
+      a.matricula === 'ns' || a.onus === 'ns' || a.arrep === 'ns' || a.proc === 'ns' || a.vsit === 'sumiu' || a.vsit === 'exterior' || a.fin === 'quitado' || a.fin === 'ns';
     return inter ? 'intermediario' : 'simples';
   }
   var FAIXAS = {
