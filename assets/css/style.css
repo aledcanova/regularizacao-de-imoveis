@@ -447,10 +447,3 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 /* Diagnóstico na mesma largura do site de divórcio e inventário (1040 px) */
 .wizard .wrap.narrow { max-width: 1040px; }
 .wizard p { max-width: none; }
-
-/* Escala de texto: só dois tamanhos de texto corrido, o do corpo e o de letra miúda (.9rem) */
-.note, .faixa, .pay p, .offer ul, .offer.destaque .cond, .offer.destaque .checks, .next .checks, .steps-h span, .trust li, table, .triagem, .verdict .triagem, .quem p { font-size: 1.0625rem; }
-.wz-priv, .hint, .tecnico, .autoria, .selo-mp, .muted, .hero .muted, .next .micro, .offer.destaque .micro, .quem-mini p, .quem-links, .profile .who span, .next .trilha, .check, .err, .quem-id, .canais small { font-size: .9rem; }
-.verdict .triagem { margin-top: 14px; }
-.verdict p + p { margin-top: 12px; }
-.verdict .triagem { color: var(--ink-2); max-width: none; }
