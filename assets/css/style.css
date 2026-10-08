@@ -431,3 +431,9 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 
 .zap[hidden] { display: none; }
 @media (max-width: 600px) { .zap { width: 48px; height: 48px; right: 12px; bottom: 12px; } .zap svg { width: 26px; height: 26px; } .site-footer { padding-bottom: 72px; } }
+
+/* Pagamento: caixas empilhadas em largura total (Mercado Pago em cima, Pix embaixo) */
+.pay-grid { grid-template-columns: 1fr; }
+.pay .selo-mp { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.pay .selo-mp img { height: 24px; width: auto; }
+.pay .pixcode { min-height: 0; }
