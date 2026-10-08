@@ -386,3 +386,7 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 .facts li { padding: 16px 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: 11em 1fr; gap: 16px; }
 .facts li span:first-child { font-size: .76rem; text-transform: uppercase; letter-spacing: .14em; color: var(--ink-3); padding-top: 4px; }
 @media (max-width: 800px) { .profile { grid-template-columns: 1fr; gap: 28px; } .facts li { grid-template-columns: 1fr; gap: 4px; } }
+
+.profile .who .retrato { display: block; width: 100%; max-width: 320px; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%; border-radius: 10px; margin: 0 0 24px; }
+.profile .who:has(.retrato) { border-top: 0; padding-top: 0; }
+@media (max-width: 800px) { .profile .who .retrato { max-width: 240px; } }
