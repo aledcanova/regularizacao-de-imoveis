@@ -428,3 +428,5 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 .zap svg { width: 30px; height: 30px; fill: #fff; }
 @media print { .zap { display: none !important; } }
 @media (max-width: 480px) { .site-header .wrap { gap: 10px; padding: 0 16px; } .brand { gap: 9px; min-width: 0; } .brand strong { font-size: 1rem; } .brand small { font-size: .62rem; } .nav-toggle { padding: 9px 12px; flex: none; } }
+
+.zap[hidden] { display: none; }

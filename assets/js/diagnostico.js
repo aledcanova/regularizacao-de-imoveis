@@ -32,7 +32,7 @@
       ['vendedor', 'Quem me vendeu'], ['outro', 'Outra pessoa ou empresa'], ['ns', 'Não sei'] ] },
     cadeia: { s: 'O imóvel', h: 'Por exemplo: o dono no cartório vendeu a alguém, que depois vendeu a você.', w: function (a) { return a.titular === 'outro'; }, t: 'Existem contratos ligando o proprietário do cartório a quem vendeu para você?', o: [
       ['sim', 'Sim, tenho todos'], ['faltam', 'Faltam contratos'], ['ns', 'Não sei'] ] },
-    onus: { s: 'O imóvel', w: function (a) { return a.matricula === 'sim'; }, t: 'Você sabe de hipoteca, penhora, alienação fiduciária ou bloqueio sobre o imóvel?', o: [
+    onus: { s: 'O imóvel', w: function (a) { return a.matricula === 'sim'; }, t: 'Você sabe de hipoteca, penhora, alienação fiduciária (imóvel em garantia ao banco) ou bloqueio sobre o imóvel?', o: [
       ['nao', 'Não há'], ['sim', 'Há'], ['ns', 'Não sei'] ] },
     vtipo: { s: 'O vendedor', t: 'O vendedor é pessoa física ou empresa?', o: [
       ['pf', 'Pessoa física'], ['pj', 'Empresa (construtora, loteadora, outra)'] ] },
@@ -266,9 +266,9 @@
     if (a.titular === 'ns') at.push('Conferir na matrícula se o proprietário registrado é quem vendeu para você.');
     if (a.titular === 'outro' && a.cadeia !== 'faltam') at.push('O proprietário registrado é outra pessoa: todos os contratos intermediários entram no procedimento e os envolvidos são notificados.');
     if (a.onus === 'sim') at.push('Ônus que não impedem a venda voluntária não obstam o pedido. Já a indisponibilidade de bens precisa ser cancelada até a decisão final.');
-    if (a.onus === 'ns') at.push('Verificar na matrícula se existe hipoteca, penhora, alienação fiduciária ou indisponibilidade.');
+    if (a.onus === 'ns') at.push('Verificar na matrícula se existe hipoteca, penhora, alienação fiduciária (imóvel em garantia ao banco) ou indisponibilidade.');
     if (a.vsit === 'morto') at.push('Vendedor falecido: são notificados os herdeiros ou, havendo inventário, o inventariante.');
-    if (a.vsit === 'sumiu') at.push('Vendedor em lugar desconhecido: a notificação por edital é possível, depois de demonstradas as tentativas de localização.');
+    if (a.vsit === 'sumiu') at.push('Vendedor em lugar desconhecido: a notificação por aviso público (edital) é possível, depois de demonstradas as tentativas de localização.');
     if (a.vsit === 'extinta') at.push('Empresa encerrada: a notificação vai ao liquidante ou ao último administrador conhecido; se não localizados, por edital. Em caso de falência, o contrato precisa ser anterior a ela.');
     if (a.vsit === 'exterior') at.push('Vendedor residente no exterior sem procurador com poderes: a notificação pode ser feita por edital.');
     if (a.vsit === 'nunca') at.push('O vendedor ainda não foi procurado. Se ele concordar em assinar, a escritura comum tende a ser mais simples.');
@@ -299,7 +299,7 @@
   }
   var FAIXAS = {
     simples: ['Caso simples', 'Contrato direto com o dono registrado, preço quitado com prova e matrícula sem pendências conhecidas.'],
-    intermediario: ['Caso intermediário', 'Há pontos que pedem trabalho documental adicional antes do pedido, como cessões, notificação por edital ou informações a confirmar na matrícula.'],
+    intermediario: ['Caso intermediário', 'Há pontos que pedem trabalho documental adicional antes do pedido, como cessões, notificação por aviso público (edital) ou informações a confirmar na matrícula.'],
     complexo: ['Caso complexo', 'Envolve sucessão, empresa encerrada, ônus ou outro ponto que exige análise jurídica individual antes de qualquer procedimento.']
   };
   var TIMELINE = [
@@ -420,7 +420,7 @@
     var form_ = fd.get('form-name');
     try {
       var og = JSON.parse(sessionStorage.getItem('origem') || '{}');
-      if (og.gclid || og.gbraid || og.wbraid) campos.gclid = og.gclid || og.gbraid || og.wbraid;
+      if (og.gclid) campos.gclid = og.gclid;
       if (Object.keys(og).length) campos.origem = JSON.stringify(og);
     } catch (e) {}
     // Lê os arquivos; se a leitura ou o envio com anexos falhar, envia os dados sem eles para não perder o caso.
@@ -519,7 +519,7 @@
       $('ct-analise').hidden = produto !== 'analise';
       $('ct-procedimento').hidden = produto !== 'procedimento';
       $('k-resumo').textContent = brl(p.total) + (p.agora !== p.total ? ' (entrada de ' + brl(p.agora) + ' agora)' : '');
-      $('k-aceite').checked = false; $('k-ia').checked = false;
+      $('k-aceite').checked = false;
       swap(pContrato, $('contrato-title'));
     });
   });
@@ -565,7 +565,6 @@
     chk('k-cpf', 'e-cpf', !cpfOk($('k-cpf').value));
     chk('k-end', 'e-end', $('k-end').value.trim().length < 10);
     chk('k-aceite', 'e-aceite', !$('k-aceite').checked);
-    chk('k-ia', 'e-ia', !$('k-ia').checked);
     if (first) { first.focus(); return; }
     var p = PROD[produto];
     $('k-protocolo').value = caso.protocolo;
@@ -639,3 +638,4 @@
   })();
   renderQuestion(nextKey() || ORDER[0]);
 })();
+(function () { var z = document.querySelector('.zap'); if (z) z.hidden = true; })();

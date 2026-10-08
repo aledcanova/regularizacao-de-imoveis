@@ -16,3 +16,10 @@
     if (Object.keys(o).length) sessionStorage.setItem('origem', JSON.stringify(o));
   } catch (e) {}
 })();
+
+// Balão de WhatsApp: mensagem inicial com a página de origem.
+(function () {
+  var z = document.querySelector('.zap'); if (!z) return;
+  var h1 = document.querySelector('h1');
+  z.href += '?text=' + encodeURIComponent('Olá. Vim pelo site, página "' + (h1 ? h1.textContent.trim() : document.title) + '".');
+})();
