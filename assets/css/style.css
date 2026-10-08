@@ -390,3 +390,41 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 .profile .who .retrato { display: block; width: 100%; max-width: 320px; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%; border-radius: 10px; margin: 0 0 24px; }
 .profile .who:has(.retrato) { border-top: 0; padding-top: 0; }
 @media (max-width: 800px) { .profile .who .retrato { max-width: 240px; } }
+
+/* Marca híbrida, quem analisa o caso, antes de contratar, exame da consulta, WhatsApp */
+.site-header .wrap { max-width: 1200px; }
+.brand-txt { display: grid; gap: 4px; }
+.brand small { display: block; font-size: .72rem; letter-spacing: .02em; text-transform: none; color: var(--ink-3); white-space: nowrap; line-height: 1; }
+@media (max-width: 1180px) {
+  .nav-toggle { display: inline-block; }
+  .nav { display: none; position: absolute; left: 0; right: 0; top: 72px; background: #fff; border-bottom: 1px solid var(--line); flex-direction: column; align-items: stretch; padding: 8px 24px 20px; }
+  .nav.open { display: flex; }
+  .nav a { padding: 13px 4px; border-bottom: 1px solid var(--line); border-radius: 0; }
+  .nav a:not(.cta)[aria-current="page"] { box-shadow: none; }
+  .nav a.cta { margin: 14px 0 0; text-align: center; border-bottom: 0; border-radius: 8px; }
+}
+@media (max-width: 480px) { .brand small { font-size: .66rem; letter-spacing: 0; } .brand small .adv { display: none; } }
+.quem { display: grid; grid-template-columns: 220px 1fr; gap: 44px; align-items: center; }
+.quem img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%; border-radius: 10px; }
+.quem h2 { margin: 0; }
+.quem .eyebrow { margin-bottom: 12px; }
+.quem-id { margin: 6px 0 16px; color: var(--ink-3); }
+.quem-links { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 18px 0 0; font-size: .95rem; }
+@media (max-width: 700px) { .quem { grid-template-columns: 1fr; gap: 24px; } .quem img { max-width: 180px; } }
+.quem-mini { display: flex; align-items: center; gap: 14px; margin: 22px 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+.quem-mini img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; object-position: 50% 18%; flex: none; }
+.quem-mini p { margin: 0; font-size: .92rem; color: var(--ink-3); line-height: 1.5; }
+.quem-mini strong { color: var(--ink); font-weight: 500; }
+.antes { list-style: none; padding: 0; margin: 40px 0 0; display: grid; gap: 32px 36px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.antes li { border-top: 1px solid var(--ink); padding-top: 20px; display: grid; gap: 8px; align-content: start; color: var(--ink-3); }
+.antes strong { color: var(--ink); font-family: var(--serif); font-weight: 500; font-size: 1.15rem; line-height: 1.25; }
+.exame { list-style: none; padding: 0; margin: 36px 0 0; display: grid; gap: 0 40px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.exame li { position: relative; padding: 15px 0 15px 32px; border-top: 1px solid var(--line); color: var(--ink-2); }
+.exame li::before { content: "✓"; position: absolute; left: 0; top: 16px; width: 20px; height: 20px; border-radius: 50%; background: var(--brand); color: #fff; font-size: .72rem; line-height: 20px; text-align: center; }
+.autoria { margin: -4px 0 18px; font-size: .86rem; color: var(--ink-3); }
+.selo-mp { color: var(--ink-3); }
+.zap { position: fixed; right: 18px; bottom: 18px; z-index: 9; width: 56px; height: 56px; border-radius: 50%; background: #1faa59; display: grid; place-items: center; box-shadow: 0 6px 18px -6px rgba(0,0,0,.45); transition: transform .2s var(--ease); }
+.zap:hover { transform: translateY(-2px); }
+.zap svg { width: 30px; height: 30px; fill: #fff; }
+@media print { .zap { display: none !important; } }
+@media (max-width: 480px) { .site-header .wrap { gap: 10px; padding: 0 16px; } .brand { gap: 9px; min-width: 0; } .brand strong { font-size: 1rem; } .brand small { font-size: .62rem; } .nav-toggle { padding: 9px 12px; flex: none; } }

@@ -4,7 +4,7 @@
 
   var Q = {
     doc: { s: 'A compra', h: 'Vale qualquer papel assinado: promessa, compromisso, recibo de sinal.', t: 'Existe documento escrito da compra?', o: [
-      ['contrato', 'Sim, contrato (promessa, compromisso ou cessão)'],
+      ['contrato', 'Sim, contrato, inclusive "contrato de gaveta"'],
       ['recibos', 'Só recibos, mensagens ou comprovantes, sem contrato'],
       ['nada', 'Nenhum documento'] ] },
     tipo: { s: 'A compra', w: function (a) { return a.doc !== 'nada'; }, t: 'Que negócio foi feito?', o: [
@@ -58,7 +58,6 @@
     if (a.vtipo === 'pj') return v !== 'morto' && v !== 'exterior';
     return v !== 'extinta';
   };
-  Q.doc.h = 'Promessa ou compromisso de compra e venda, cessão de direitos, ou apenas recibos.';
   var ORDER = ['doc', 'tipo', 'arrep', 'quem', 'quit', 'prova', 'imovel', 'matricula', 'titular', 'cadeia', 'onus', 'vtipo', 'vsit', 'proc', 'posse', 'tempo'];
 
   var stage = document.getElementById('wz-stage');
@@ -375,7 +374,6 @@
     var arqMsg = tipoRuim ? 'Envie apenas arquivos PDF, JPG, PNG ou HEIC.' : 'Os arquivos somam mais de 8 MB. Remova algum; o restante pode ser enviado depois, por e-mail.';
     if (setErr(null, 'e-arq', tipoRuim || total > MAX, arqMsg) && !first) first = $('f-contrato');
     chk('f-c1', 'e-c1', !$('f-c1').checked);
-    chk('f-c2', 'e-c2', !$('f-c2').checked);
     return first;
   }
   function protocolo() {
@@ -420,6 +418,11 @@
       else if (v && v.size) files.push([k, v]);
     });
     var form_ = fd.get('form-name');
+    try {
+      var og = JSON.parse(sessionStorage.getItem('origem') || '{}');
+      if (og.gclid || og.gbraid || og.wbraid) campos.gclid = og.gclid || og.gbraid || og.wbraid;
+      if (Object.keys(og).length) campos.origem = JSON.stringify(og);
+    } catch (e) {}
     // Lê os arquivos; se a leitura ou o envio com anexos falhar, envia os dados sem eles para não perder o caso.
     var lidos = Promise.all(files.map(function (kv) {
       return b64(kv[1]).then(function (d) { arquivos.push({ campo: kv[0], nome: kv[1].name, tipo: kv[1].type, dados: d }); });
@@ -516,7 +519,7 @@
       $('ct-analise').hidden = produto !== 'analise';
       $('ct-procedimento').hidden = produto !== 'procedimento';
       $('k-resumo').textContent = brl(p.total) + (p.agora !== p.total ? ' (entrada de ' + brl(p.agora) + ' agora)' : '');
-      $('k-aceite').checked = false;
+      $('k-aceite').checked = false; $('k-ia').checked = false;
       swap(pContrato, $('contrato-title'));
     });
   });
@@ -562,6 +565,7 @@
     chk('k-cpf', 'e-cpf', !cpfOk($('k-cpf').value));
     chk('k-end', 'e-end', $('k-end').value.trim().length < 10);
     chk('k-aceite', 'e-aceite', !$('k-aceite').checked);
+    chk('k-ia', 'e-ia', !$('k-ia').checked);
     if (first) { first.focus(); return; }
     var p = PROD[produto];
     $('k-protocolo').value = caso.protocolo;
