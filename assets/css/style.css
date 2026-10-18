@@ -489,3 +489,29 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 .nav .dd > summary::after { position: static; font-size: 0; color: inherit; right: auto; top: auto; }
 @media (max-width: 1180px) { .nav .dd > summary { font-size: .93rem; color: var(--ink-2); } .nav .dd[open] > summary { color: var(--ink); } }
 
+/* Diagnóstico: chamada, envio e confirmação (funil pelo WhatsApp) */
+.ic-zap { width: 20px; height: 20px; flex: none; }
+.next .checks { margin: 22px 0 26px; }
+.next .btn.cta { gap: 12px; }
+.envio-acoes { display: flex; flex-direction: column; align-items: stretch; gap: 14px; margin-top: 8px; }
+.envio-acoes .btn.link { align-self: center; }
+.btn.btn-zap { min-height: 58px; font-size: 1.06rem; font-weight: 600; }
+@media (min-width: 640px) {
+  .envio-acoes { flex-direction: row-reverse; justify-content: space-between; align-items: center; }
+  .btn.btn-zap { padding-left: 36px; padding-right: 36px; }
+}
+.sucesso-card { text-align: center; padding: 44px 32px 36px; border: 1px solid #d5e8db; border-radius: 10px; background: var(--ok-soft); }
+.sucesso-ic { display: inline-grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--ok); color: #fff; margin-bottom: 20px; }
+.sucesso-ic svg { width: 32px; height: 32px; }
+.sucesso-card h2 { margin: 0 0 16px; font-size: clamp(1.6rem, 3.4vw, 2.1rem); line-height: 1.2; outline: none; }
+.sucesso-lead { margin: 0 auto 10px; max-width: 52ch; font-size: 1.06rem; line-height: 1.6; color: var(--ink-2); }
+.sucesso-prot { display: inline-block; margin: 18px 0 0; padding: 6px 14px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-size: .86rem; letter-spacing: .02em; color: var(--ink-3); }
+.sucesso-prot strong { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.sucesso-h3 { margin: 44px 0 6px; font-size: 1.3rem; }
+.sucesso-btns { margin-top: 28px; align-items: center; }
+@media (max-width: 600px) { .sucesso-card { padding: 34px 20px 28px; } .sucesso-btns .btn.ghost { width: 100%; } }
+.verdict .tecnico { margin-top: 18px; font-size: .9rem; color: var(--ink-3); }
+.verdict .triagem { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(20, 40, 30, .1); font-size: .86rem; line-height: 1.55; }
+.verdict .tecnico + .triagem { margin-top: 10px; }
+.sucesso-btns { justify-content: center; }
+@media (max-width: 600px) { .sucesso-btns { flex-direction: column; } }

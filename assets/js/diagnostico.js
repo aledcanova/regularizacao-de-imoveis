@@ -432,6 +432,9 @@
       Array.prototype.forEach.call(document.querySelectorAll('.prot'), function (e) { e.textContent = prot; });
       $('sucesso-go').hidden = !viavel();
       $('sucesso-outro').hidden = viavel();
+      var z = $('sucesso-zap');
+      if (CFG.whatsapp_e164) z.href = 'https://wa.me/' + CFG.whatsapp_e164.replace(/\D/g, '') + '?text=' + encodeURIComponent('Olá! Meu protocolo é ' + prot + '.');
+      else z.hidden = true;
       swap(pSucesso, $('sucesso-title'));
     }).catch(function (e) {
       var cod = (e && (e.codigo || (e.name === 'AbortError' ? 'tempo' : e.message))) || 'rede';
