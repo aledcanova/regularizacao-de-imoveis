@@ -72,7 +72,7 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var top = $('wz-top'), bar = $('wz-progress'), count = $('wz-count');
-  var pResult = $('wz-result'), pEnvio = $('wz-envio'), pProposta = $('wz-proposta'), pContrato = $('wz-contrato'), pPag = $('wz-pagamento'), pFalar = $('wz-falar');
+  var pResult = $('wz-result'), pEnvio = $('wz-envio'), pSucesso = $('wz-sucesso');
 
   function el(tag, text, cls) {
     var e = document.createElement(tag);
@@ -104,7 +104,7 @@
 
   // Troca de painel com transição suave
   function swap(show, focusEl) {
-    var panes = [stage, pResult, pEnvio, pProposta, pContrato, pPag, pFalar];
+    var panes = [stage, pResult, pEnvio, pSucesso];
     panes.forEach(function (p) { if (p !== show) { p.hidden = true; p.classList.remove('in'); } });
     show.hidden = false;
     if (show !== stage) {
@@ -147,7 +147,7 @@
       nav.appendChild(v);
     } else nav.appendChild(el('span'));
     step.appendChild(nav);
-    step.appendChild(el('p', 'O resultado desta etapa é apenas uma classificação informativa baseada nas respostas fornecidas. Ele não constitui orientação ou consulta jurídica. A análise jurídica individualizada somente ocorre após a contratação da consulta e é realizada pelo advogado responsável.', 'wz-priv'));
+    step.appendChild(el('p', 'O resultado desta etapa é apenas uma classificação informativa baseada nas respostas fornecidas. Ele não constitui orientação ou consulta jurídica. A análise jurídica individualizada somente ocorre após a contratação e é realizada pelo advogado responsável.', 'wz-priv'));
 
     var old = stage.firstChild;
     function enter() {
@@ -308,7 +308,7 @@
     complexo: ['Caso que pede análise individual', 'Envolve sucessão, empresa encerrada, ônus ou outro ponto que exige análise jurídica individual antes de qualquer procedimento.']
   };
   var TIMELINE = [
-    ['Consulta de viabilidade', 'O advogado examina contrato, pagamento e matrícula.'],
+    ['Conferência dos documentos', 'O advogado confere o contrato, o pagamento e a matrícula.'],
     ['Procuração', 'Você assina a procuração específica para o procedimento.'],
     ['Preparo das peças', 'Levantamento de certidões e montagem do dossiê e do requerimento.'],
     ['Ata notarial', 'O tabelião registra em ata os contratos e a prova do pagamento.'],
@@ -350,15 +350,18 @@
     swap(pResult, $('verdict-title'));
   }
 
+  // Funil "Sinal Verde Condicionado": nenhum preço no site. Caso viável (GO) recebe a proposta pelo WhatsApp
+  // (backoffice/whatsapp_service.py); os demais são examinados pelo advogado, que responde pelo WhatsApp.
+  function viavel() { return !!(result && result.cod === 'ADJ'); }
+
   $('refazer').addEventListener('click', function () { a = {}; result = null; renderQuestion(ORDER[0]); swap(stage, null); });
   $('imprimir').addEventListener('click', function () { window.print(); });
   ['abrir-envio', 'abrir-envio-2'].forEach(function (id) { $(id).addEventListener('click', function () { swap(pEnvio, $('envio-title')); }); });
   $('voltar-resultado').addEventListener('click', function () { swap(pResult, $('verdict-title')); });
 
-  // ---------- Passo 1: dados e documentos ----------
+  // ---------- Dados de contato ----------
   var form = $('caso');
-  var MAX = 8 * 1024 * 1024;
-  var caso = null;   // {protocolo, nome, email} depois do envio
+  var enviado = null;   // protocolo, depois do envio
   function setErr(input, errId, bad, msg) {
     var e = $(errId);
     if (msg) e.textContent = msg;
@@ -368,19 +371,14 @@
   }
   function validate() {
     var first = null;
-    function chk(id, errId, bad, msg) { if (setErr($(id), errId, bad, msg) && !first) first = $(id); }
+    function chk(id, errId, bad) { if (setErr($(id), errId, bad) && !first) first = $(id); }
     chk('f-nome', 'e-nome', $('f-nome').value.trim().split(/\s+/).length < 2);
-    var em = $('f-email').value.trim(), emOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em), telOk = $('f-tel').value.replace(/\D/g, '').length >= 10;
-    chk('f-email', 'e-email', em ? !emOk : !telOk);
+    var tel = $('f-tel').value.replace(/\D/g, '');
+    chk('f-tel', 'e-tel', tel.length < 10 || tel.length > 13);
+    var em = $('f-email').value.trim();
+    chk('f-email', 'e-email', !!em && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em));
     chk('f-cidade', 'e-cidade', $('f-cidade').value.trim().length < 2);
     chk('f-uf', 'e-uf', !$('f-uf').value);
-    var total = 0, tipoRuim = false;
-    ['f-contrato', 'f-matricula', 'f-pagamento'].forEach(function (id) {
-      var f = $(id).files && $(id).files[0];
-      if (f) { total += f.size; if (!/\.(pdf|jpe?g|png|heic)$/i.test(f.name)) tipoRuim = true; }
-    });
-    var arqMsg = tipoRuim ? 'Envie apenas arquivos PDF, JPG, PNG ou HEIC.' : 'Os arquivos somam mais de 8 MB. Remova algum; o restante pode ser enviado depois.';
-    if (setErr(null, 'e-arq', tipoRuim || total > MAX, arqMsg) && !first) first = $('f-contrato');
     chk('f-c1', 'e-c1', !$('f-c1').checked);
     return first;
   }
@@ -392,66 +390,49 @@
     for (var i = 0; i < 5; i++) r += abc[buf[i] % abc.length];
     return 'RI-' + String(d.getFullYear()).slice(2) + p(d.getMonth() + 1) + p(d.getDate()) + '-' + r;
   }
-  function setProt(p) {
-    Array.prototype.forEach.call(document.querySelectorAll('.prot'), function (e) { e.textContent = p; });
-  }
-  function b64(file) {
-    return new Promise(function (res, rej) {
-      var r = new FileReader();
-      r.onload = function () { res(String(r.result).split(',')[1] || ''); };
-      r.onerror = rej;
-      r.readAsDataURL(file);
-    });
-  }
   // Com endpoint (script do Google): JSON { form, campos, arquivos } em text/plain, que não exige pré-consulta do navegador.
-  // Sem endpoint: formulário do Netlify, como antes.
-  var anexosPendentes = false;
-  function mandar(body) {
+  function enviar(fd) {
+    var campos = {};
+    fd.forEach(function (v, k) { if (k !== 'form-name' && typeof v === 'string') campos[k] = v; });
+    try {
+      var og = JSON.parse(sessionStorage.getItem('origem') || '{}');
+      if (og.gclid) campos.gclid = og.gclid;
+      if (Object.keys(og).length) campos.origem = JSON.stringify(og);
+    } catch (e) {}
+    if (!CFG.endpoint) return fetch('/', { method: 'POST', body: fd }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); });
     var ctl = window.AbortController ? new AbortController() : null;
-    var t = ctl ? setTimeout(function () { ctl.abort(); }, 90000) : 0;
+    var t = ctl ? setTimeout(function () { ctl.abort(); }, 60000) : 0;
     return fetch(CFG.endpoint, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(body), signal: ctl ? ctl.signal : undefined })
+      body: JSON.stringify({ form: fd.get('form-name'), campos: campos, arquivos: [] }), signal: ctl ? ctl.signal : undefined })
       .then(function (r) { clearTimeout(t); if (!r.ok) throw new Error('http ' + r.status); return r.text(); })
       .then(function (txt) {
         var j; try { j = JSON.parse(txt); } catch (e) { throw new Error('resposta'); }
         if (!j || !j.ok) { var er = new Error('recusado'); er.codigo = j && j.erro; throw er; }
       }, function (e) { clearTimeout(t); throw e; });
   }
-  function enviar(fd) {
-    if (!CFG.endpoint) return fetch('/', { method: 'POST', body: fd }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); });
-    var campos = {}, arquivos = [], files = [];
-    fd.forEach(function (v, k) {
-      if (k === 'form-name') return;
-      if (typeof v === 'string') campos[k] = v;
-      else if (v && v.size) files.push([k, v]);
-    });
-    var form_ = fd.get('form-name');
-    try {
-      var og = JSON.parse(sessionStorage.getItem('origem') || '{}');
-      if (og.gclid) campos.gclid = og.gclid;
-      if (Object.keys(og).length) campos.origem = JSON.stringify(og);
-    } catch (e) {}
-    // Lê os arquivos; se a leitura ou o envio com anexos falhar, envia os dados sem eles para não perder o caso.
-    var lidos = Promise.all(files.map(function (kv) {
-      return b64(kv[1]).then(function (d) { arquivos.push({ campo: kv[0], nome: kv[1].name, tipo: kv[1].type, dados: d }); });
-    }));
-    function semAnexos(motivo) {
-      if (!files.length) throw motivo;
-      if (window.console) console.error('envio com anexos falhou:', motivo && (motivo.codigo || motivo.message));
-      campos.anexos_pendentes = files.map(function (kv) { return kv[1].name; }).join('; ');
-      return mandar({ form: form_, campos: campos, arquivos: [] }).then(function () { anexosPendentes = true; });
-    }
-    return lidos.then(function () { return mandar({ form: form_, campos: campos, arquivos: arquivos }); })
-      .catch(function (e) {
-        if (e && e.codigo && e.codigo !== 'tamanho' && e.codigo !== 'servidor') throw e;
-        return semAnexos(e);
-      });
-  }
-  function post(fd, btn, rotulo, errBox, ok) {
+
+  form.addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var bad = validate();
+    if (bad) { bad.focus(); return; }
+    var prot = enviado || protocolo();
+    $('f-protocolo').value = prot;
+    $('f-codigo').value = result ? result.cod : '';
+    $('f-resultado').value = result ? result.titulo : '';
+    $('f-respostas').value = visible().map(function (k) { return Q[k].t + ' ' + label(k, a[k]); }).join('\n');
+    $('f-json').value = JSON.stringify(a);
+    $('f-pontos').value = JSON.stringify(result ? result.atencao : []);
+    $('f-faixa').value = result && result.faixa ? result.faixa : '';
+    $('f-viavel').value = viavel() ? 'sim' : 'nao';
+    var btn = $('enviar'), rotulo = btn.textContent, errBox = $('e-envio');
     errBox.hidden = true;
     btn.disabled = true; btn.textContent = 'Enviando…';
-    enviar(fd).then(function () {
-      ok();
+    enviar(new FormData(form)).then(function () {
+      enviado = prot;
+      Array.prototype.forEach.call(document.querySelectorAll('.prot'), function (e) { e.textContent = prot; });
+      $('sucesso-go').hidden = !viavel();
+      $('sucesso-outro').hidden = viavel();
+      swap(pSucesso, $('sucesso-title'));
     }).catch(function (e) {
       var cod = (e && (e.codigo || (e.name === 'AbortError' ? 'tempo' : e.message))) || 'rede';
       if (window.console) console.error('envio falhou:', cod);
@@ -460,185 +441,6 @@
       errBox.textContent = msg + (CFG.email || 'o e-mail da página de contato') + '. (código: ' + String(cod).slice(0, 40) + ')';
       errBox.hidden = false;
     }).then(function () { btn.disabled = false; btn.textContent = rotulo; });
-  }
-
-  form.addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    var bad = validate();
-    if (bad) { bad.focus(); return; }
-    var prot = caso ? caso.protocolo : protocolo();
-    $('f-protocolo').value = prot;
-    $('f-codigo').value = result ? result.cod : '';
-    $('f-resultado').value = result ? result.titulo : '';
-    $('f-respostas').value = visible().map(function (k) { return Q[k].t + ' ' + label(k, a[k]); }).join('\n');
-    $('f-json').value = JSON.stringify(a);
-    $('f-pontos').value = JSON.stringify(result ? result.atencao : []);
-    $('f-faixa').value = result && result.faixa ? result.faixa : '';
-    var fd = new FormData(form);
-    ['arquivo_contrato', 'arquivo_matricula', 'arquivo_pagamento'].forEach(function (n) {
-      var f = fd.get(n);
-      if (f && typeof f === 'object' && !f.size) fd.delete(n);   // não envia campo de arquivo vazio
-    });
-    post(fd, $('enviar'), 'Enviar e ver a proposta', $('e-envio'), function () {
-      caso = { protocolo: prot, nome: $('f-nome').value.trim(), email: $('f-email').value.trim() };
-      setProt(prot);
-      if (anexosPendentes && !$('aviso-anexos')) {
-        var av = el('p', 'Seus dados foram recebidos, mas não foi possível receber os arquivos agora. Envie-os para ' + CFG.email + ' informando o protocolo ' + prot + '.', 'err');
-        av.id = 'aviso-anexos'; av.setAttribute('role', 'status');
-        $('offer-procedimento').parentNode.parentNode.insertBefore(av, $('offer-procedimento').parentNode);
-      }
-      // O contrato de regularização completa é o da adjudicação compulsória: só é oferecido quando o diagnóstico aponta essa via
-      // Simples: contratação direta. Intermediário: só se houver preço da faixa em config. Complexo: consulta e atendimento do advogado.
-      var fxa = result ? result.faixa : null, precoProc = 0;
-      // A contratação do procedimento passou a acontecer depois do parecer (fluxo a definir): só com oferecer_procedimento = true
-      if (CFG.oferecer_procedimento && fxa === 'simples') precoProc = CFG.preco_procedimento;
-      if (CFG.oferecer_procedimento && fxa === 'intermediario') precoProc = CFG.preco_procedimento_intermediario || 0;
-      PROD.procedimento.total = precoProc;
-      PROD.procedimento.agora = Math.round(precoProc * CFG.entrada_procedimento_pct) / 100;
-      $('offer-procedimento').hidden = !precoProc;
-      if (precoProc) {
-        $('preco-proc').textContent = brl(precoProc);
-        $('entrada-proc').textContent = brl(PROD.procedimento.agora);
-        $('parcela-proc').textContent = brl((precoProc - PROD.procedimento.agora) / 2);
-        Array.prototype.forEach.call(document.querySelectorAll('.ct-total'), function (e) { e.textContent = brl(precoProc); });
-        Array.prototype.forEach.call(document.querySelectorAll('.ct-entrada'), function (e) { e.textContent = brl(PROD.procedimento.agora); });
-        Array.prototype.forEach.call(document.querySelectorAll('.ct-parcela'), function (e) { e.textContent = brl((precoProc - PROD.procedimento.agora) / 2); });
-      }
-      var nota = $('nota-so-analise');
-      nota.hidden = fxa !== 'complexo';
-      nota.textContent = 'Seu caso foi classificado como complexo e recebe análise jurídica individual: a orientação indicará se o caminho é o cartório ou outro, e a proposta virá de acordo com ela.';
-      humano();
-      swap(pProposta, $('proposta-title'));
-    });
-  });
-
-  // ---------- Passo 2: proposta ----------
-  var PROD = {
-    analise: { nome: 'Consulta com análise documental', total: CFG.preco_analise, agora: CFG.preco_analise, link: CFG.link_cartao_analise, ct: 'ct-analise' },
-    procedimento: { nome: 'Regularização completa', total: CFG.preco_procedimento, agora: Math.round(CFG.preco_procedimento * CFG.entrada_procedimento_pct) / 100, link: CFG.link_cartao_procedimento, ct: 'ct-procedimento' }
-  };
-  var produto = null;
-  function brl(v) { return 'R$ ' + Number(v).toLocaleString('pt-BR', { minimumFractionDigits: v % 1 ? 2 : 0, maximumFractionDigits: 2 }); }
-
-  Array.prototype.forEach.call(pProposta.querySelectorAll('[data-produto]'), function (b) {
-    b.addEventListener('click', function () {
-      produto = b.getAttribute('data-produto');
-      var p = PROD[produto];
-      $('ct-analise').hidden = produto !== 'analise';
-      $('ct-procedimento').hidden = produto !== 'procedimento';
-      $('k-resumo').textContent = brl(p.total) + (p.agora !== p.total ? ' (entrada de ' + brl(p.agora) + ' agora)' : '');
-      $('k-aceite').checked = false;
-      $('k-email-campo').hidden = !!caso.email;
-      swap(pContrato, $('contrato-title'));
-    });
-  });
-  $('voltar-proposta').addEventListener('click', function () { swap(pProposta, $('proposta-title')); });
-  function humano() {
-    var txt = encodeURIComponent('Protocolo ' + caso.protocolo + ' - quero falar com o advogado');
-    var mail = 'mailto:' + CFG.email + '?subject=' + txt;
-    var zap = CFG.whatsapp_e164 ? 'https://wa.me/' + CFG.whatsapp_e164.replace(/\D/g, '') + '?text=' + txt : '';
-    Array.prototype.forEach.call(document.querySelectorAll('.humano-link'), function (l) {
-      l.href = zap || mail;
-      l.textContent = zap ? 'Atendimento humano por WhatsApp' : 'Atendimento humano por e-mail';
-      if (zap) { l.target = '_blank'; l.rel = 'noopener'; }
-    });
-  }
-  $('abrir-falar').addEventListener('click', function () {
-    var assunto = encodeURIComponent('Protocolo ' + caso.protocolo + ' - falar com o advogado');
-    $('falar-email').href = 'mailto:' + CFG.email + '?subject=' + assunto;
-    if (CFG.whatsapp_e164) {
-      var w = $('falar-whats');
-      w.href = 'https://wa.me/' + CFG.whatsapp_e164.replace(/\D/g, '') + '?text=' + encodeURIComponent('Protocolo ' + caso.protocolo);
-      w.hidden = false;
-    }
-    swap(pFalar, $('falar-title'));
-  });
-  $('falar-voltar').addEventListener('click', function () { swap(pProposta, $('proposta-title')); });
-
-  // ---------- Passo 3: contrato e aceite ----------
-  function cpfOk(v) {
-    var c = v.replace(/\D/g, '');
-    if (c.length !== 11 || /^(\d)\1{10}$/.test(c)) return false;
-    function dv(n) { var s = 0; for (var i = 0; i < n; i++) s += +c[i] * (n + 1 - i); var r = (s * 10) % 11; return r === 10 ? 0 : r; }
-    return dv(9) === +c[9] && dv(10) === +c[10];
-  }
-  $('k-cpf').addEventListener('input', function () {
-    var c = this.value.replace(/\D/g, '').slice(0, 11);
-    this.value = c.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1-$2');
-  });
-  var kform = $('contratacao');
-  kform.addEventListener('submit', function (ev) {
-    ev.preventDefault();
-    var first = null;
-    function chk(id, errId, bad) { if (setErr($(id), errId, bad) && !first) first = $(id); }
-    chk('k-cpf', 'e-cpf', !cpfOk($('k-cpf').value));
-    chk('k-end', 'e-end', $('k-end').value.trim().length < 10);
-    chk('k-aceite', 'e-aceite', !$('k-aceite').checked);
-    if (first) { first.focus(); return; }
-    var p = PROD[produto];
-    $('k-protocolo').value = caso.protocolo;
-    $('k-produto').value = produto;
-    $('k-total').value = p.total;
-    $('k-agora').value = p.agora;
-    $('k-versao').value = CFG.versao_contrato || '';
-    $('k-nome').value = caso.nome;
-    if (!caso.email) {
-      var ev2 = $('k-email-vis').value.trim();
-      if (setErr($('k-email-vis'), 'e-kemail', !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(ev2))) { $('k-email-vis').focus(); return; }
-      caso.email = ev2;
-    }
-    $('k-email').value = caso.email;
-    $('k-quando').value = new Date().toISOString();
-    post(new FormData(kform), $('contratar'), 'Aceitar e ir para o pagamento', $('e-contratar'), function () { showPagamento(p); });
-  });
-
-  // ---------- Pagamento ----------
-  function ascii(s, max) {
-    return s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9 ]/g, '').toUpperCase().slice(0, max);
-  }
-  function crc16(s) {
-    var crc = 0xFFFF;
-    for (var i = 0; i < s.length; i++) {
-      crc ^= s.charCodeAt(i) << 8;
-      for (var j = 0; j < 8; j++) crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) & 0xFFFF : (crc << 1) & 0xFFFF;
-    }
-    return ('0000' + crc.toString(16).toUpperCase()).slice(-4);
-  }
-  function pixCode(valor, txid) {   // BR Code estático (padrão EMV do Banco Central)
-    function f(id, v) { return id + ('0' + v.length).slice(-2) + v; }
-    var s = f('00', '01') + f('26', f('00', 'br.gov.bcb.pix') + f('01', CFG.pix_chave)) + f('52', '0000') + f('53', '986') +
-      f('54', Number(valor).toFixed(2)) + f('58', 'BR') + f('59', ascii(CFG.pix_nome, 25)) + f('60', ascii(CFG.pix_cidade, 15)) +
-      f('62', f('05', txid)) + '6304';
-    return s + crc16(s);
-  }
-
-  function showPagamento(p) {
-    $('pag-produto').textContent = p.nome;
-    $('pag-valor').textContent = brl(p.agora);
-    // Pix direto (código copia e cola) e, havendo link, cartão ou boleto pelo Mercado Pago, lado a lado
-    var temCartao = !!p.link, temPix = !!(CFG.pix_chave && CFG.pix_nome);
-    if (temPix) $('pix-code').value = pixCode(p.agora, caso.protocolo.replace(/[^A-Za-z0-9]/g, '').slice(0, 25));
-    $('pag-pix').hidden = !temPix;
-    if (temCartao) $('cartao-link').href = p.link;
-    $('pag-cartao').hidden = !temCartao;
-    $('pag-email').hidden = temPix || temCartao;
-    var passos = produto === 'analise'
-      ? [['Confirmação', 'Você recebe por e-mail a confirmação do pagamento e a cópia do contrato.'],
-         ['Documentos', 'Se faltou o contrato ou a matrícula, envie em resposta a esse e-mail.'],
-         ['Análise', 'O advogado examina os documentos e confirma a viabilidade do caso.'],
-         ['Orientação e proposta', 'Você recebe a orientação assinada e a proposta detalhada do procedimento no prazo do contrato.']]
-      : [['Confirmação', 'Você recebe por e-mail a confirmação do pagamento e a cópia do contrato.'],
-         ['Revisão do caso', 'O advogado revisa o caso e confirma a contratação. Se não confirmar, o valor pago é devolvido integralmente.'],
-         ['Início', 'Confirmado, você recebe a procuração para assinar e a lista do que falta. O procedimento começa.']];
-    var ol = $('pag-passos'); ol.textContent = '';
-    passos.forEach(function (x) { var li = el('li'); li.appendChild(el('strong', x[0])); li.appendChild(document.createTextNode(x[1])); ol.appendChild(li); });
-    swap(pPag, $('pag-title'));
-  }
-  $('pix-copiar').addEventListener('click', function () {
-    var b = this, t = $('pix-code');
-    function ok() { b.textContent = 'Código copiado'; setTimeout(function () { b.textContent = 'Copiar código Pix'; }, 2500); }
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t.value).then(ok, function () { t.select(); });
-    else { t.select(); document.execCommand('copy'); ok(); }
   });
 
   // Respostas trazidas pelas páginas de cada situação (ex.: diagnostico.html?vsit=morto&vtipo=pf)

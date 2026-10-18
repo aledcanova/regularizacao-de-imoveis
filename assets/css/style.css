@@ -488,3 +488,4 @@ fieldset > legend { font-family: var(--serif); font-size: 1.15rem; padding: 0; m
 .nav .dd > summary { font-family: var(--sans); position: static; }
 .nav .dd > summary::after { position: static; font-size: 0; color: inherit; right: auto; top: auto; }
 @media (max-width: 1180px) { .nav .dd > summary { font-size: .93rem; color: var(--ink-2); } .nav .dd[open] > summary { color: var(--ink); } }
+
