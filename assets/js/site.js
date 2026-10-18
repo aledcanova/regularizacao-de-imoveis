@@ -6,6 +6,24 @@
   });
 })();
 
+// Submenus do topo: abre um de cada vez; fecha ao clicar fora ou com Esc.
+(function () {
+  var dds = document.querySelectorAll('.nav .dd');
+  if (!dds.length) return;
+  dds.forEach(function (d) {
+    d.addEventListener('toggle', function () {
+      if (d.open) dds.forEach(function (o) { if (o !== d) o.open = false; });
+    });
+  });
+  document.addEventListener('click', function (e) {
+    dds.forEach(function (d) { if (d.open && !d.contains(e.target)) d.open = false; });
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    dds.forEach(function (d) { if (d.open) { d.open = false; d.querySelector('summary').focus(); } });
+  });
+})();
+
 // Origem da visita (anúncio): guarda o identificador do clique só durante a visita, para medir contratações. Sem cookies.
 (function () {
   try {

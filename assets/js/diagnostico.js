@@ -345,6 +345,8 @@
     m.appendChild(el('h3', 'Documentos normalmente relevantes')); m.appendChild(list(result.docs));
     if (result.faixa) { m.appendChild(el('h3', 'Como é o caminho até o registro')); m.appendChild(timeline()); }
     else { m.appendChild(el('h3', 'Etapas gerais')); m.appendChild(list(result.etapas, true)); }
+    // ⚠️ Calculadora de custos de terceiros: desligada até a consulta à Comissão de Ética da OAB/RS
+    if (result.faixa && CFG.calculadora_custos && window.CUSTOS) window.CUSTOS.render(m);
     swap(pResult, $('verdict-title'));
   }
 
