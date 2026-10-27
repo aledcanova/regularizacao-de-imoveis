@@ -433,7 +433,8 @@
       $('sucesso-go').hidden = !viavel();
       $('sucesso-outro').hidden = viavel();
       var z = $('sucesso-zap');
-      if (CFG.whatsapp_e164) z.href = 'https://wa.me/' + CFG.whatsapp_e164.replace(/\D/g, '') + '?text=' + encodeURIComponent('Olá! Meu protocolo é ' + prot + '.');
+      var zp = CFG.zap_proposta_e164 || CFG.whatsapp_e164;
+      if (zp) z.href = 'https://wa.me/' + zp.replace(/\D/g, '') + '?text=' + encodeURIComponent('Olá! Meu protocolo é ' + prot + '.');
       else z.hidden = true;
       swap(pSucesso, $('sucesso-title'));
     }).catch(function (e) {
